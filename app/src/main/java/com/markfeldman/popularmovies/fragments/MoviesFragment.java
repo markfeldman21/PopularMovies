@@ -90,7 +90,7 @@ public class MoviesFragment extends Fragment {
                 final String BASE_URL = "http://api.themoviedb.org/";
                 String SEARCH_BY = "3/movie/popular";
                 final String API_KEY_SEARCH = "?api_key=";
-                final String API_KEY ="CREATE OWN KEY";
+                final String API_KEY ="OWN KEY";
                 final String LANGUAGE_PARAM = "&language=";
                 final String LANGUAGE = "en-US";
                 final String PAGE_PARAM = "&page=";
