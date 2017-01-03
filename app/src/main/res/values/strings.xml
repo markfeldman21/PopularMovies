@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">PopularMovies</string>
+    <string name="movie_pref_title">View Movies By: </string>
+    <string-array name="pref_view_order">
+        <item>Top Rated</item>
+        <item>Most Popular</item>
+    </string-array>
+    <string name="pref_default_unit">Most Popular</string>
+    <string name="title_activity_settings">Settings</string>
+</resources>
