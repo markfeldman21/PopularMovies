@@ -1,15 +1,13 @@
 package com.markfeldman.popularmovies.data_helpers;
 
 import android.content.Context;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.GridView;
 
-import com.markfeldman.popularmovies.R;
+import com.markfeldman.popularmovies.objects.MovieObj;
 import com.squareup.picasso.Picasso;
 
 public class CustomGridAdapter extends BaseAdapter {
@@ -17,23 +15,23 @@ public class CustomGridAdapter extends BaseAdapter {
     private final String MOVIE_DB_URL_START = "http://image.tmdb.org/t/p/w185/";
     private int width, height;
 
-    private String[] mThumbIds;
+    private MovieObj[] movies;
 
-    public CustomGridAdapter(Context context, String[] items, int width, int height) {
+    public CustomGridAdapter(Context context, MovieObj[] items, int width, int height) {
         this.mContext = context;
-        this.mThumbIds = items;
+        this.movies = items;
         this.width = width/2;
         this.height = height/2;
     }
 
     @Override
     public int getCount() {
-        return mThumbIds.length;
+        return movies.length;
     }
 
     @Override
     public Object getItem(int position) {
-        return mThumbIds[position];
+        return movies[position];
     }
 
     @Override
@@ -73,7 +71,7 @@ public class CustomGridAdapter extends BaseAdapter {
         }else {
             imageView = (ImageView) convertView;
         }
-        Picasso.with(mContext).load(MOVIE_DB_URL_START + mThumbIds[position]).fit().into(imageView);
+        Picasso.with(mContext).load(MOVIE_DB_URL_START + movies[position].getMoviePosterTag()).fit().into(imageView);
 
         return imageView;
     }

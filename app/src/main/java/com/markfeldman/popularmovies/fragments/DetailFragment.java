@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.markfeldman.popularmovies.R;
+import com.markfeldman.popularmovies.objects.MovieObj;
 import com.squareup.picasso.Picasso;
 
 public class DetailFragment extends Fragment {
@@ -20,6 +21,7 @@ public class DetailFragment extends Fragment {
     private final String INTENT_EXTRA = "Intent Extra";
     private final String MOVIE_DB_URL_START = "http://image.tmdb.org/t/p/w185/";
     private String imageUrl;
+    private MovieObj movieObj;
 
     public DetailFragment() {
         // Required empty public constructor
@@ -36,8 +38,8 @@ public class DetailFragment extends Fragment {
 
         Intent i = getActivity().getIntent();
         if (i!=null && i.hasExtra(INTENT_EXTRA)){
-            imageUrl = i.getStringExtra(INTENT_EXTRA);
-            Picasso.with(getActivity()).load(MOVIE_DB_URL_START + imageUrl).fit().into(moviePoster);
+            movieObj = i.getParcelableExtra(INTENT_EXTRA);
+            Picasso.with(getActivity()).load(MOVIE_DB_URL_START + movieObj.getMoviePosterTag()).fit().into(moviePoster);
         }
 
         return view;

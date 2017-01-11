@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.DisplayMetrics;
@@ -21,6 +22,8 @@ import com.markfeldman.popularmovies.activities.DetailActivity;
 import com.markfeldman.popularmovies.data_helpers.CustomGridAdapter;
 import com.markfeldman.popularmovies.R;
 import com.markfeldman.popularmovies.data_helpers.JSONParser;
+import com.markfeldman.popularmovies.objects.MovieObj;
+
 import org.json.JSONException;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -33,6 +36,7 @@ import java.net.URL;
 public class MoviesFragment extends Fragment {
     private GridView gridView;
     private String[] movieImages = null;
+    private MovieObj[] movieObjs = null;
     private final String INTENT_EXTRA = "Intent Extra";
 
     public MoviesFragment() {
@@ -50,15 +54,13 @@ public class MoviesFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_movies, container, false);
 
-
         gridView = (GridView)view.findViewById(R.id.gridView);
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String imageUrl = movieImages[position];
                 Intent i = new Intent(getActivity(), DetailActivity.class);
-                i.putExtra(INTENT_EXTRA,imageUrl);
+                i.putExtra(INTENT_EXTRA, movieObjs[position]);
                 startActivity(i);
             }
         });
@@ -70,7 +72,7 @@ public class MoviesFragment extends Fragment {
         new RetrieveMovieInfo().execute();
     }
 
-    public class RetrieveMovieInfo extends AsyncTask<Void,Void,String[]>{
+    public class RetrieveMovieInfo extends AsyncTask<Void,Void,MovieObj[]>{
 
         HttpURLConnection urlConnection;
         BufferedReader reader;
@@ -83,14 +85,15 @@ public class MoviesFragment extends Fragment {
         }
 
         @Override
-        protected String[] doInBackground(Void...params) {
+        protected MovieObj[] doInBackground(Void...params) {
             String movieImageURL[] = null;
+            MovieObj [] movieObjs = null;
 
             try {
                 final String BASE_URL = "http://api.themoviedb.org/";
                 String SEARCH_BY = "3/movie/popular";
                 final String API_KEY_SEARCH = "?api_key=";
-                final String API_KEY ="OWN KEY";
+                final String API_KEY ="657b6c53f883538fe1f57b0e84031c09";
                 final String LANGUAGE_PARAM = "&language=";
                 final String LANGUAGE = "en-US";
                 final String PAGE_PARAM = "&page=";
@@ -135,6 +138,12 @@ public class MoviesFragment extends Fragment {
                     Log.v("MOVIES", "JSON + " + moviesJsonStr);
                     JSONParser jsonParser = new JSONParser();
                     movieImageURL = jsonParser.getMovieImagesURL(moviesJsonStr);
+
+                    movieObjs = jsonParser.getMovieObjectsL(moviesJsonStr);
+
+                    for (int i = 0; i < movieObjs.length; i++){
+                        Log.v("test", "MOVIES = " + movieObjs[i].getMoviePosterTag());
+                    }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -152,21 +161,20 @@ public class MoviesFragment extends Fragment {
                     }
                 }
             }
-            return movieImageURL;
+            return movieObjs;
         }
 
         @Override
-        protected void onPostExecute(String[] movieImageURL) {
-            super.onPostExecute(movieImageURL);
-            movieImages = movieImageURL;
+        protected void onPostExecute(MovieObj[] moviObjects) {
+            super.onPostExecute(moviObjects);
+            movieObjs = moviObjects;
 
             DisplayMetrics metrics = new DisplayMetrics();
             getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
             int displayWidth = metrics.widthPixels ;
             int displayHeight = metrics.heightPixels;
 
-            gridView.setAdapter(new CustomGridAdapter(getActivity(),movieImageURL, displayWidth,displayHeight));
-
+            gridView.setAdapter(new CustomGridAdapter(getActivity(),movieObjs, displayWidth,displayHeight));
 
         }
     }
