@@ -20,6 +20,7 @@ import com.markfeldman.popularmovies.R;
 import com.markfeldman.popularmovies.activities.DetailActivity;
 import com.markfeldman.popularmovies.data_helpers.JSONParser;
 import com.markfeldman.popularmovies.data_helpers.MovieRecyclerAdapter;
+import com.markfeldman.popularmovies.data_helpers.NetworkUtils;
 import com.markfeldman.popularmovies.objects.MovieObj;
 import org.json.JSONException;
 import java.io.BufferedReader;
@@ -27,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 
@@ -89,76 +91,22 @@ public class MoviesFragment extends Fragment implements MovieRecyclerAdapter.Mov
         @Override
         protected MovieObj[] doInBackground(Void...params) {
             MovieObj [] movieObjs = null;
-
             try {
-                final String BASE_URL = "http://api.themoviedb.org/";
-                String SEARCH_BY = "3/movie/popular";
-                final String API_KEY_SEARCH = "?api_key=";
-                final String API_KEY ="657b6c53f883538fe1f57b0e84031c09";
-                final String LANGUAGE_PARAM = "&language=";
-                final String LANGUAGE = "en-US";
-                final String PAGE_PARAM = "&page=";
-                final String PAGE_NUM = "1";
-
+                URL urlResponse = NetworkUtils.buildUrlPopular();
                 if (sortBy().equals("Top Rated")){
-                     SEARCH_BY = "3/movie/top_rated";
+                    urlResponse = NetworkUtils.buildUrlTopRated();
                 }
-
-                Uri builtUri = Uri.parse(BASE_URL).buildUpon()
-                        .appendEncodedPath(SEARCH_BY + API_KEY_SEARCH + API_KEY + LANGUAGE_PARAM + LANGUAGE + PAGE_PARAM + PAGE_NUM)
-                        .build();
-                URL url = new URL(builtUri.toString());
-
-                urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setRequestMethod("GET");
-                urlConnection.connect();
-
-                // Read the input stream into a String
-                InputStream inputStream = null;
-
-                inputStream = urlConnection.getInputStream();
-                StringBuffer buffer = new StringBuffer();
-                if (inputStream == null) {
-                    Log.v("1", "nothing retrieved");
-                }
-                reader = new BufferedReader(new InputStreamReader(inputStream));
-
-                String line;
-
-                try {
-                    while ((line = reader.readLine()) != null) {
-                        buffer.append(line + "\n");//Helpful for debugging
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                if (buffer.length() == 0) {
-                    Log.v("1", "nothing in bufferedString");
-                }else{
-                    moviesJsonStr = buffer.toString();
-                    Log.v("MOVIES", "JSON + " + moviesJsonStr);
-                    JSONParser jsonParser = new JSONParser();
-
-
-                    movieObjs = jsonParser.getMovieObjectsL(moviesJsonStr);
-
-                }
+                String jsonResponse = NetworkUtils.getResponseFromHttpUrl(urlResponse);
+                JSONParser jsonParser = new JSONParser();
+                movieObjs = jsonParser.getMovieObjectsL(jsonResponse);
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (JSONException e) {
                 e.printStackTrace();
-            } finally{
-                if (urlConnection != null) {
-                    urlConnection.disconnect();
-                }
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (final IOException e) {
-                        Log.e("PlaceholderFragment", "Error closing stream", e);
-                    }
-                }
             }
+
             return movieObjs;
         }
 
