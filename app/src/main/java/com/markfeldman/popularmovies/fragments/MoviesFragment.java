@@ -1,29 +1,26 @@
 package com.markfeldman.popularmovies.fragments;
 
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.util.DisplayMetrics;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.GridView;
 import android.widget.Toast;
-
-import com.markfeldman.popularmovies.activities.DetailActivity;
-import com.markfeldman.popularmovies.data_helpers.CustomGridAdapter;
 import com.markfeldman.popularmovies.R;
+import com.markfeldman.popularmovies.activities.DetailActivity;
 import com.markfeldman.popularmovies.data_helpers.JSONParser;
+import com.markfeldman.popularmovies.data_helpers.MovieRecyclerAdapter;
 import com.markfeldman.popularmovies.objects.MovieObj;
-
 import org.json.JSONException;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -33,11 +30,12 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 
-public class MoviesFragment extends Fragment {
-    private GridView gridView;
-    private String[] movieImages = null;
+public class MoviesFragment extends Fragment implements MovieRecyclerAdapter.MovieClickedListener {
+    private RecyclerView recyclerView;
+    private MovieRecyclerAdapter movieRecyclerAdapter;
     private MovieObj[] movieObjs = null;
     private final String INTENT_EXTRA = "Intent Extra";
+    private ProgressDialog progressDialog;
 
     public MoviesFragment() {
     }
@@ -54,22 +52,25 @@ public class MoviesFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_movies, container, false);
 
-        gridView = (GridView)view.findViewById(R.id.gridView);
+        recyclerView = (RecyclerView)view.findViewById(R.id.recyclerView);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(),2);
 
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent i = new Intent(getActivity(), DetailActivity.class);
-                i.putExtra(INTENT_EXTRA, movieObjs[position]);
-                startActivity(i);
-            }
-        });
-
+        recyclerView.setLayoutManager(gridLayoutManager);
+        recyclerView.setHasFixedSize(true);
+        movieRecyclerAdapter = new MovieRecyclerAdapter(this);
+        recyclerView.setAdapter(movieRecyclerAdapter);
         return view;
     }
 
     public void loadMovies(){
         new RetrieveMovieInfo().execute();
+    }
+
+    @Override
+    public void onCLicked(MovieObj movieChosen) {
+        Intent i = new Intent(getActivity(), DetailActivity.class);
+        i.putExtra(INTENT_EXTRA, movieChosen);
+        startActivity(i);
     }
 
     public class RetrieveMovieInfo extends AsyncTask<Void,Void,MovieObj[]>{
@@ -78,15 +79,15 @@ public class MoviesFragment extends Fragment {
         BufferedReader reader;
         String moviesJsonStr;
 
-        RetrieveMovieInfo(){
-            HttpURLConnection urlConnection = null;
-            BufferedReader reader = null;
-            String moviesJsonStr = null;
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(getActivity());
+            progressDialog.show();
         }
 
         @Override
         protected MovieObj[] doInBackground(Void...params) {
-            String movieImageURL[] = null;
             MovieObj [] movieObjs = null;
 
             try {
@@ -137,13 +138,10 @@ public class MoviesFragment extends Fragment {
                     moviesJsonStr = buffer.toString();
                     Log.v("MOVIES", "JSON + " + moviesJsonStr);
                     JSONParser jsonParser = new JSONParser();
-                    movieImageURL = jsonParser.getMovieImagesURL(moviesJsonStr);
+
 
                     movieObjs = jsonParser.getMovieObjectsL(moviesJsonStr);
 
-                    for (int i = 0; i < movieObjs.length; i++){
-                        Log.v("test", "MOVIES = " + movieObjs[i].getMoviePosterTag());
-                    }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -167,14 +165,9 @@ public class MoviesFragment extends Fragment {
         @Override
         protected void onPostExecute(MovieObj[] moviObjects) {
             super.onPostExecute(moviObjects);
+            progressDialog.dismiss();
             movieObjs = moviObjects;
-
-            DisplayMetrics metrics = new DisplayMetrics();
-            getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
-            int displayWidth = metrics.widthPixels ;
-            int displayHeight = metrics.heightPixels;
-
-            gridView.setAdapter(new CustomGridAdapter(getActivity(),movieObjs, displayWidth,displayHeight));
+            movieRecyclerAdapter.setMovieData(moviObjects);
 
         }
     }
