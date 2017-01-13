@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.markfeldman.popularmovies.R;
 import com.markfeldman.popularmovies.activities.DetailActivity;
@@ -35,9 +36,10 @@ import java.net.URL;
 public class MoviesFragment extends Fragment implements MovieRecyclerAdapter.MovieClickedListener {
     private RecyclerView recyclerView;
     private MovieRecyclerAdapter movieRecyclerAdapter;
-    private MovieObj[] movieObjs = null;
+
     private final String INTENT_EXTRA = "Intent Extra";
     private ProgressDialog progressDialog;
+    private TextView errorMessage;
 
     public MoviesFragment() {
     }
@@ -53,6 +55,7 @@ public class MoviesFragment extends Fragment implements MovieRecyclerAdapter.Mov
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_movies, container, false);
+        errorMessage = (TextView) view.findViewById(R.id.tv_error_message_display);
 
         recyclerView = (RecyclerView)view.findViewById(R.id.recyclerView);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(),2);
@@ -75,12 +78,17 @@ public class MoviesFragment extends Fragment implements MovieRecyclerAdapter.Mov
         startActivity(i);
     }
 
+    private void showErrorMessage(){
+        recyclerView.setVisibility(View.INVISIBLE);
+        errorMessage.setVisibility(View.VISIBLE);
+    }
+
+    private void showWeatherDataView() {
+        errorMessage.setVisibility(View.INVISIBLE);
+        recyclerView.setVisibility(View.VISIBLE);
+    }
+
     public class RetrieveMovieInfo extends AsyncTask<Void,Void,MovieObj[]>{
-
-        HttpURLConnection urlConnection;
-        BufferedReader reader;
-        String moviesJsonStr;
-
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -90,7 +98,7 @@ public class MoviesFragment extends Fragment implements MovieRecyclerAdapter.Mov
 
         @Override
         protected MovieObj[] doInBackground(Void...params) {
-            MovieObj [] movieObjs = null;
+            MovieObj []movieObjs = null;
             try {
                 URL urlResponse = NetworkUtils.buildUrlPopular();
                 if (sortBy().equals("Top Rated")){
@@ -105,6 +113,7 @@ public class MoviesFragment extends Fragment implements MovieRecyclerAdapter.Mov
                 e.printStackTrace();
             } catch (JSONException e) {
                 e.printStackTrace();
+                movieObjs = null;
             }
 
             return movieObjs;
@@ -114,8 +123,13 @@ public class MoviesFragment extends Fragment implements MovieRecyclerAdapter.Mov
         protected void onPostExecute(MovieObj[] moviObjects) {
             super.onPostExecute(moviObjects);
             progressDialog.dismiss();
-            movieObjs = moviObjects;
-            movieRecyclerAdapter.setMovieData(moviObjects);
+            if (moviObjects!=null){
+                showWeatherDataView();
+                movieRecyclerAdapter.setMovieData(moviObjects);
+            }else {
+                showErrorMessage();
+            }
+
 
         }
     }
