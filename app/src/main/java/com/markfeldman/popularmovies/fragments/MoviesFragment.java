@@ -9,12 +9,16 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.markfeldman.popularmovies.R;
@@ -33,20 +37,26 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 
-public class MoviesFragment extends Fragment implements MovieRecyclerAdapter.MovieClickedListener {
+public class MoviesFragment extends Fragment implements MovieRecyclerAdapter.MovieClickedListener, LoaderManager.LoaderCallbacks<String> {
     private RecyclerView recyclerView;
     private MovieRecyclerAdapter movieRecyclerAdapter;
-
     private final String INTENT_EXTRA = "Intent Extra";
     private ProgressDialog progressDialog;
     private TextView errorMessage;
+    private final static int SEARCH_LOADER = 22;
+    private static final String SEARCH_QUERY_URL_EXTRA = "query";
+    private ProgressBar progressBar;
 
     public MoviesFragment() {
     }
 
     @Override
     public void onStart() {
-        loadMovies();
+        try {
+            loadMovies();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
         super.onStart();
 
     }
@@ -67,8 +77,25 @@ public class MoviesFragment extends Fragment implements MovieRecyclerAdapter.Mov
         return view;
     }
 
-    public void loadMovies(){
-        new RetrieveMovieInfo().execute();
+    public void loadMovies() throws MalformedURLException {
+        URL urlResponse = NetworkUtils.buildUrlPopular();
+        if (sortBy().equals("Top Rated")){
+            urlResponse = NetworkUtils.buildUrlTopRated();
+        }
+
+        Bundle queryBundle = new Bundle();
+        queryBundle.putString(SEARCH_QUERY_URL_EXTRA,urlResponse.toString());
+
+        //CHECK IF LOADER EXISTS
+        LoaderManager loaderManager = getActivity().getSupportLoaderManager();
+
+        Loader<String> githubSearchLoader = loaderManager.getLoader(SEARCH_LOADER);
+        if (githubSearchLoader == null) {
+            loaderManager.initLoader(SEARCH_LOADER, queryBundle, this);
+        } else {
+            loaderManager.restartLoader(SEARCH_LOADER, queryBundle, this);
+        }
+        //new RetrieveMovieInfo().execute();
     }
 
     @Override
@@ -83,55 +110,77 @@ public class MoviesFragment extends Fragment implements MovieRecyclerAdapter.Mov
         errorMessage.setVisibility(View.VISIBLE);
     }
 
-    private void showWeatherDataView() {
+    private void showDataView() {
         errorMessage.setVisibility(View.INVISIBLE);
         recyclerView.setVisibility(View.VISIBLE);
     }
 
-    public class RetrieveMovieInfo extends AsyncTask<Void,Void,MovieObj[]>{
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            progressDialog = new ProgressDialog(getActivity());
-            progressDialog.show();
-        }
-
-        @Override
-        protected MovieObj[] doInBackground(Void...params) {
-            MovieObj []movieObjs = null;
-            try {
-                URL urlResponse = NetworkUtils.buildUrlPopular();
-                if (sortBy().equals("Top Rated")){
-                    urlResponse = NetworkUtils.buildUrlTopRated();
+    @Override
+    public Loader<String> onCreateLoader(int id, final Bundle args) {
+        return  new AsyncTaskLoader<String>(getActivity()) {
+            String mJsonResult;
+            @Override
+            protected void onStartLoading() {
+                //progressBar.setVisibility(View.VISIBLE);
+                super.onStartLoading();
+                if (args == null){
+                    return;
                 }
-                String jsonResponse = NetworkUtils.getResponseFromHttpUrl(urlResponse);
-                JSONParser jsonParser = new JSONParser();
-                movieObjs = jsonParser.getMovieObjectsL(jsonResponse);
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
+                if (mJsonResult != null){
+                    deliverResult(mJsonResult);
+                }else{
+                    forceLoad();
+                }
+
+            }
+
+            @Override
+            public String loadInBackground() {
+                String searchQueryURLString = args.getString(SEARCH_QUERY_URL_EXTRA);
+                if (searchQueryURLString==null){
+                    return null;
+                }
+                try {
+                    URL responseUrl = new URL(searchQueryURLString);
+                    String jsonResponse = NetworkUtils.getResponseFromHttpUrl(responseUrl);
+                    return jsonResponse;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+
+            @Override
+            public void deliverResult(String data) {
+                mJsonResult = data;
+                super.deliverResult(data);
+            }
+        };
+    }
+
+    @Override
+    public void onLoadFinished(Loader<String> loader, String data) {
+        MovieObj movies[] = null;
+        //progressBar.setVisibility(View.INVISIBLE);
+        if (data == null){
+            showErrorMessage();
+        }else{
+            JSONParser jsonParser = new JSONParser();
+            try {
+                movies = jsonParser.getMovieObjectsL(data);
+                showDataView();
+                movieRecyclerAdapter.setMovieData(movies);
+
             } catch (JSONException e) {
                 e.printStackTrace();
-                movieObjs = null;
             }
-
-            return movieObjs;
         }
 
-        @Override
-        protected void onPostExecute(MovieObj[] moviObjects) {
-            super.onPostExecute(moviObjects);
-            progressDialog.dismiss();
-            if (moviObjects!=null){
-                showWeatherDataView();
-                movieRecyclerAdapter.setMovieData(moviObjects);
-            }else {
-                showErrorMessage();
-            }
+    }
 
+    @Override
+    public void onLoaderReset(Loader<String> loader) {
 
-        }
     }
 
     public String sortBy(){
