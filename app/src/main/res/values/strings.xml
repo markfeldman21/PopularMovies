@@ -1,14 +1,19 @@
 <resources>
     <string name="app_name">PopularMovies</string>
+    <!--Preferences-->
     <string name="movie_pref_title">View Movies By: </string>
     <string-array name="pref_view_order">
         <item>Top Rated</item>
         <item>Most Popular</item>
     </string-array>
+    <string name="movie_pref_key">movie pref key</string>
     <string name="pref_default_unit">Most Popular</string>
     <string name="title_activity_settings">Settings</string>
     <string name="error_message">Data Was Not Retrieved</string>
 
-<!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!--Activities-->
+    <string name="settingsActivity">Settings</string>
+    <string name="detailActivity">Detail</string>
+
+
 </resources>

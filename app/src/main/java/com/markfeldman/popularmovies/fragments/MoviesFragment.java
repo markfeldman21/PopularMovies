@@ -11,6 +11,7 @@ import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -174,7 +175,9 @@ public class MoviesFragment extends Fragment implements MovieRecyclerAdapter.Mov
 
     public String sortBy(){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String sort = prefs.getString(getString(R.string.movie_pref_title),getString(R.string.pref_default_unit));
+        String sort = prefs.getString(getString(R.string.movie_pref_key),getString(R.string.pref_default_unit));
+        Log.d("MOVFRAG", "RESULT = "+ sort + " TITLE = " + getResources().getString(R.string.movie_pref_title) +
+                "STRING DEFAULT = " + getResources().getString(R.string.pref_default_unit));
 
         return sort;
     }
