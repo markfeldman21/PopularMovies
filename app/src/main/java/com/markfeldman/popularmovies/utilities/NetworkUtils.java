@@ -1,12 +1,7 @@
-package com.markfeldman.popularmovies.data_helpers;
+package com.markfeldman.popularmovies.utilities;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.net.Uri;
-import android.preference.PreferenceManager;
-import android.util.Log;
-
-import com.markfeldman.popularmovies.R;
 
 import java.io.IOException;
 import java.io.InputStream;

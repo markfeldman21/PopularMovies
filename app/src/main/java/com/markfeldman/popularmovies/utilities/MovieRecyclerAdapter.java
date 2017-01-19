@@ -1,4 +1,4 @@
-package com.markfeldman.popularmovies.data_helpers;
+package com.markfeldman.popularmovies.utilities;
 
 
 import android.content.Context;
