@@ -2,6 +2,7 @@ package com.markfeldman.popularmovies.utilities;
 
 import android.content.Context;
 import android.net.Uri;
+import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,21 +32,21 @@ public final class NetworkUtils {
     final static String PAGE_NUM = "1";
 
 
-    public static URL buildUrlPopular() throws MalformedURLException {
-        Uri builtUri = Uri.parse(BASE_URL).buildUpon()
-                .appendEncodedPath(SEARCH_BY_POP + API_KEY_SEARCH + API_KEY + LANGUAGE_PARAM + LANGUAGE + PAGE_PARAM + PAGE_NUM)
-                .build();
-        URL url = new URL(builtUri.toString());
-
-        return url;
-    }
-
-    public static URL buildUrlTopRated() throws MalformedURLException {
-        Uri builtUri = Uri.parse(BASE_URL).buildUpon()
-                .appendEncodedPath(SEARCH_BY_TOP + API_KEY_SEARCH + API_KEY + LANGUAGE_PARAM + LANGUAGE + PAGE_PARAM + PAGE_NUM)
-                .build();
-        URL url = new URL(builtUri.toString());
-
+    public static URL buildUrl(String pref) throws MalformedURLException {
+        Log.d("NEWTORK", "IN UTILS STRING = " + pref);
+        URL url = null;
+        Uri builtUri = null;
+        if (pref.equals("Most Popular")){
+            builtUri = Uri.parse(BASE_URL).buildUpon()
+                    .appendEncodedPath(SEARCH_BY_POP + API_KEY_SEARCH + API_KEY + LANGUAGE_PARAM + LANGUAGE + PAGE_PARAM + PAGE_NUM)
+                    .build();
+            url = new URL(builtUri.toString());
+        } else if (pref.equals("Top Rated")){
+            builtUri = Uri.parse(BASE_URL).buildUpon()
+                    .appendEncodedPath(SEARCH_BY_TOP + API_KEY_SEARCH + API_KEY + LANGUAGE_PARAM + LANGUAGE + PAGE_PARAM + PAGE_NUM)
+                    .build();
+        }
+        url = new URL(builtUri.toString());
         return url;
     }
 

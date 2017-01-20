@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.markfeldman.popularmovies.R;
 import com.markfeldman.popularmovies.activities.DetailActivity;
 import com.markfeldman.popularmovies.utilities.JSONParser;
+import com.markfeldman.popularmovies.utilities.MovSharedPreferences;
 import com.markfeldman.popularmovies.utilities.MovieRecyclerAdapter;
 import com.markfeldman.popularmovies.utilities.NetworkUtils;
 import com.markfeldman.popularmovies.objects.MovieObj;
@@ -29,25 +30,29 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 
-public class MoviesFragment extends Fragment implements MovieRecyclerAdapter.MovieClickedListener, LoaderManager.LoaderCallbacks<String> {
+public class MoviesFragment extends Fragment implements MovieRecyclerAdapter.MovieClickedListener, LoaderManager.LoaderCallbacks<MovieObj[]>,
+        SharedPreferences.OnSharedPreferenceChangeListener{
     private RecyclerView recyclerView;
     private MovieRecyclerAdapter movieRecyclerAdapter;
     private final String INTENT_EXTRA = "Intent Extra";
     private TextView errorMessage;
-    private final static int SEARCH_LOADER = 22;
+    private final static int SEARCH_LOADER = 1;
     private static final String SEARCH_QUERY_URL_EXTRA = "query";
     private ProgressBar progressBar;
+    private static boolean PREFERENCES_HAVE_BEEN_UPDATED = false;
+
+
 
     public MoviesFragment() {
     }
 
     @Override
     public void onStart() {
-        try {
-            loadMovies();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
+        if (PREFERENCES_HAVE_BEEN_UPDATED){
+            getActivity().getSupportLoaderManager().restartLoader(SEARCH_LOADER,null,this);
+            PREFERENCES_HAVE_BEEN_UPDATED = false;
         }
+
         super.onStart();
 
     }
@@ -55,6 +60,7 @@ public class MoviesFragment extends Fragment implements MovieRecyclerAdapter.Mov
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.d("FORCAST", "IN ON CREATE VIEW = ");
         View view = inflater.inflate(R.layout.fragment_movies, container, false);
         errorMessage = (TextView) view.findViewById(R.id.tv_error_message_display);
         progressBar = (ProgressBar)view.findViewById(R.id.pb_loading_indicator);
@@ -65,28 +71,16 @@ public class MoviesFragment extends Fragment implements MovieRecyclerAdapter.Mov
         recyclerView.setHasFixedSize(true);
         movieRecyclerAdapter = new MovieRecyclerAdapter(this);
         recyclerView.setAdapter(movieRecyclerAdapter);
+
+        LoaderManager.LoaderCallbacks<MovieObj[]> callbacks = this;
+
+        Bundle bundleForLoader = null;
+        getActivity().getSupportLoaderManager().initLoader(SEARCH_LOADER,null,callbacks);
+        PreferenceManager.getDefaultSharedPreferences(getActivity()).registerOnSharedPreferenceChangeListener(this);
+
         return view;
     }
 
-    public void loadMovies() throws MalformedURLException {
-        URL urlResponse = NetworkUtils.buildUrlPopular();
-        if (sortBy().equals("Top Rated")){
-            urlResponse = NetworkUtils.buildUrlTopRated();
-        }
-
-        Bundle queryBundle = new Bundle();
-        queryBundle.putString(SEARCH_QUERY_URL_EXTRA,urlResponse.toString());
-
-        //CHECK IF LOADER EXISTS
-        LoaderManager loaderManager = getActivity().getSupportLoaderManager();
-
-        Loader<String> githubSearchLoader = loaderManager.getLoader(SEARCH_LOADER);
-        if (githubSearchLoader == null) {
-            loaderManager.initLoader(SEARCH_LOADER, queryBundle, this);
-        } else {
-            loaderManager.restartLoader(SEARCH_LOADER, queryBundle, this);
-        }
-    }
 
     @Override
     public void onCLicked(MovieObj movieChosen) {
@@ -106,79 +100,69 @@ public class MoviesFragment extends Fragment implements MovieRecyclerAdapter.Mov
     }
 
     @Override
-    public Loader<String> onCreateLoader(int id, final Bundle args) {
-        return  new AsyncTaskLoader<String>(getActivity()) {
-            String mJsonResult;
+    public Loader<MovieObj[]> onCreateLoader(int id, final Bundle args) {
+        return  new AsyncTaskLoader<MovieObj[]>(getActivity()) {
+            MovieObj[] movies = null;
             @Override
             protected void onStartLoading() {
                 progressBar.setVisibility(View.VISIBLE);
-                super.onStartLoading();
-                if (args == null){
-                    return;
-                }
-                if (mJsonResult != null){
-                    deliverResult(mJsonResult);
-                }else{
+                if (movies!=null){
+                    deliverResult(movies);
+                } else{
                     forceLoad();
                 }
+                super.onStartLoading();
 
             }
 
             @Override
-            public String loadInBackground() {
-                String searchQueryURLString = args.getString(SEARCH_QUERY_URL_EXTRA);
+            public MovieObj[] loadInBackground() {
+                String searchQueryURLString = MovSharedPreferences.getPreferredMovieCategory(getActivity());
                 if (searchQueryURLString==null){
                     return null;
                 }
                 try {
-                    URL responseUrl = new URL(searchQueryURLString);
-                    String jsonResponse = NetworkUtils.getResponseFromHttpUrl(responseUrl);
-                    return jsonResponse;
-                } catch (IOException e) {
+                    URL movieRequest = NetworkUtils.buildUrl(searchQueryURLString);
+                    String jsonResponse = NetworkUtils.getResponseFromHttpUrl(movieRequest);
+                    JSONParser jsonParser = new JSONParser();
+                    movies = jsonParser.getMovieObjectsL(jsonResponse);
+                    return movies;
+                } catch (Exception e) {
                     e.printStackTrace();
                     return null;
                 }
             }
 
             @Override
-            public void deliverResult(String data) {
-                mJsonResult = data;
+            public void deliverResult(MovieObj[] data) {
+                movies = data;
                 super.deliverResult(data);
             }
         };
     }
 
     @Override
-    public void onLoadFinished(Loader<String> loader, String data) {
-        MovieObj movies[] = null;
+    public void onLoadFinished(Loader<MovieObj[]> loader, MovieObj[] data) {
         progressBar.setVisibility(View.INVISIBLE);
         if (data == null){
             showErrorMessage();
         }else{
-            JSONParser jsonParser = new JSONParser();
-            try {
-                movies = jsonParser.getMovieObjectsL(data);
-                showDataView();
-                movieRecyclerAdapter.setMovieData(movies);
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+            showDataView();
+            movieRecyclerAdapter.setMovieData(data);
         }
 
     }
 
     @Override
-    public void onLoaderReset(Loader<String> loader) {
+    public void onLoaderReset(Loader<MovieObj[]> loader) {
 
     }
 
-    public String sortBy(){
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String sort = prefs.getString(getString(R.string.movie_pref_key),getString(R.string.pref_default_unit));
-        Log.d("MOVFRAG", "RESULT = "+ sort + " TITLE = " + getResources().getString(R.string.movie_pref_title) +
-                "STRING DEFAULT = " + getResources().getString(R.string.pref_default_unit));
 
-        return sort;
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
+        PREFERENCES_HAVE_BEEN_UPDATED = true;
+        Log.d("FORECASTFRAG", "PREF UPDATED!!!!!!!!");
+
     }
 }

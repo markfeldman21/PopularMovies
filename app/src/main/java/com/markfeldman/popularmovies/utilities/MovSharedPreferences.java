@@ -7,7 +7,7 @@ import android.support.v7.preference.PreferenceManager;
 import com.markfeldman.popularmovies.R;
 
 public class MovSharedPreferences {
-    public static String getPreferredWeatherLocation(Context context) {
+    public static String getPreferredMovieCategory(Context context) {
         SharedPreferences prefs = PreferenceManager
                 .getDefaultSharedPreferences(context);
         String keyForLocation = context.getString(R.string.movie_pref_key);
