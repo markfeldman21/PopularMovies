@@ -95,6 +95,7 @@ public class MoviesFragment extends Fragment implements MovieRecyclerAdapter.Mov
     }
 
     private void showDataView() {
+        progressBar.setVisibility(View.INVISIBLE);
         errorMessage.setVisibility(View.INVISIBLE);
         recyclerView.setVisibility(View.VISIBLE);
     }
@@ -143,7 +144,6 @@ public class MoviesFragment extends Fragment implements MovieRecyclerAdapter.Mov
 
     @Override
     public void onLoadFinished(Loader<MovieObj[]> loader, MovieObj[] data) {
-        progressBar.setVisibility(View.INVISIBLE);
         if (data == null){
             showErrorMessage();
         }else{
