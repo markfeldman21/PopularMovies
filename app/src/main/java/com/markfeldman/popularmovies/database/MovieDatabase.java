@@ -7,19 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class MovieDatabase {
-    private static final String DATABASE_NAME = "waitlist.db";
-    private static final int DATABASE_VERSION = 1;
-    private final static String CREATE_DATABASE = "CREATE TABLE " + MovieContract.MovieDataContract.TABLE_NAME +
-            " ("+ MovieContract.MovieDataContract._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-            MovieContract.MovieDataContract.MOVIE_TITLE + "TEXT NOT NULL, " +
-            MovieContract.MovieDataContract.MOVIE_PLOT + " TEXT NOT NULL, " +
-            MovieContract.MovieDataContract.MOVIE_RATING + " REAL, " +
-            MovieContract.MovieDataContract.MOVIE_RELEASE + " TEXT NOT NULL, " +
-            MovieContract.MovieDataContract.MOVIE_POSTER_TAG + " TEXT NOT NULL" +
-            MovieContract.MovieDataContract.MOVIE_PREFERENCE + " TEXT NOT NULL" +
-             ");";
-
-
     private SQLiteDatabase mDb;
     private MovieDatabaseHelper movieDatabaseHelper;
     private Context context;
@@ -70,7 +57,20 @@ public class MovieDatabase {
     }
 
 
-    public class MovieDatabaseHelper extends SQLiteOpenHelper{
+    public static class MovieDatabaseHelper extends SQLiteOpenHelper{
+        private static final String DATABASE_NAME = "waitlist.db";
+        private static final int DATABASE_VERSION = 1;
+        private final static String CREATE_DATABASE = "CREATE TABLE " + MovieContract.MovieDataContract.TABLE_NAME +
+                " ("+ MovieContract.MovieDataContract._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                MovieContract.MovieDataContract.MOVIE_TITLE + "TEXT NOT NULL, " +
+                MovieContract.MovieDataContract.MOVIE_PLOT + " TEXT NOT NULL, " +
+                MovieContract.MovieDataContract.MOVIE_RATING + " REAL, " +
+                MovieContract.MovieDataContract.MOVIE_RELEASE + " TEXT NOT NULL, " +
+                MovieContract.MovieDataContract.MOVIE_POSTER_TAG + " TEXT NOT NULL, " +
+                MovieContract.MovieDataContract.MOVIE_PREFERENCE + " TEXT NOT NULL" +
+                ");";
+
+
         public MovieDatabaseHelper(Context context){
             super (context, DATABASE_NAME,null,DATABASE_VERSION);
         }

@@ -31,6 +31,8 @@ public final class NetworkUtils {
     final static String PAGE_PARAM = "&page=";
     final static String PAGE_NUM = "1";
 
+    //Have 2 mwthods that reurn URLs for both top rated and pop movies. Have the Json Parser parse
+    //each individal and place in same ContentValues Object for provider
 
     public static URL buildUrl(String pref) throws MalformedURLException {
         Log.d("NEWTORK", "IN UTILS STRING = " + pref);
