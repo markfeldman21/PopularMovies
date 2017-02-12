@@ -19,6 +19,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.markfeldman.popularmovies.R;
 import com.markfeldman.popularmovies.activities.DetailActivity;
+import com.markfeldman.popularmovies.database.MovieDatabase;
 import com.markfeldman.popularmovies.utilities.JSONParser;
 import com.markfeldman.popularmovies.utilities.MovSharedPreferences;
 import com.markfeldman.popularmovies.utilities.MovieRecyclerAdapter;
@@ -101,6 +102,13 @@ public class MoviesFragment extends Fragment implements MovieRecyclerAdapter.Mov
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        PreferenceManager.getDefaultSharedPreferences(getActivity())
+                .unregisterOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
     public Loader<MovieObj[]> onCreateLoader(int id, final Bundle args) {
         return  new AsyncTaskLoader<MovieObj[]>(getActivity()) {
             MovieObj[] movies = null;
@@ -108,6 +116,7 @@ public class MoviesFragment extends Fragment implements MovieRecyclerAdapter.Mov
             protected void onStartLoading() {
                 progressBar.setVisibility(View.VISIBLE);
                 if (movies!=null){
+                    progressBar.setVisibility(View.INVISIBLE);
                     deliverResult(movies);
                 } else{
                     forceLoad();
@@ -163,6 +172,12 @@ public class MoviesFragment extends Fragment implements MovieRecyclerAdapter.Mov
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
         PREFERENCES_HAVE_BEEN_UPDATED = true;
         Log.d("FORECASTFRAG", "PREF UPDATED!!!!!!!!");
+
+    }
+
+    public void saveToDatabase(MovieObj[] movieObjs){
+        MovieDatabase movieDatabase = new MovieDatabase(getActivity());
+        movieDatabase.open();
 
     }
 }

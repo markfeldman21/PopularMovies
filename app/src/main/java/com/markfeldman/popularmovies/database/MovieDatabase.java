@@ -16,7 +16,8 @@ public class MovieDatabase {
             MovieContract.MovieDataContract.MOVIE_RATING + " REAL, " +
             MovieContract.MovieDataContract.MOVIE_RELEASE + " TEXT NOT NULL, " +
             MovieContract.MovieDataContract.MOVIE_POSTER_TAG + " TEXT NOT NULL" +
-            ");";
+            MovieContract.MovieDataContract.MOVIE_PREFERENCE + " TEXT NOT NULL" +
+             ");";
 
 
     private SQLiteDatabase mDb;
@@ -56,13 +57,14 @@ public class MovieDatabase {
     }
 
     //SQLite return statement returns long containing id of inserted Row
-    public long insertRow(String title, String plot, Double rating, String release, String poster){
+    public long insertRow(String title, String plot, Double rating, String release, String poster, String pref){
         ContentValues cv = new ContentValues();
         cv.put(MovieContract.MovieDataContract.MOVIE_TITLE, title);
         cv.put(MovieContract.MovieDataContract.MOVIE_PLOT, plot);
         cv.put(MovieContract.MovieDataContract.MOVIE_RATING,rating);
         cv.put(MovieContract.MovieDataContract.MOVIE_RELEASE,release);
         cv.put(MovieContract.MovieDataContract.MOVIE_POSTER_TAG,poster);
+        cv.put(MovieContract.MovieDataContract.MOVIE_PREFERENCE,pref);
 
         return mDb.insert(MovieContract.MovieDataContract.TABLE_NAME, null,cv);
     }
