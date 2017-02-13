@@ -21,7 +21,6 @@ public class MovieContract {
         public static final String MOVIE_RATING = "rating";
         public static final String MOVIE_POSTER_TAG = "poster";
         public static final String MOVIE_ID = "movie_id";
-        public static final String YOUTUBE_KEY = "youtube_key";
         public static final String MOVIE_PREFERENCE = "pref";
 
     }

@@ -80,6 +80,8 @@ public class MoviesFragment extends Fragment implements MovieRecyclerAdapter.Mov
         getActivity().getSupportLoaderManager().initLoader(SEARCH_LOADER,null,callbacks);
         PreferenceManager.getDefaultSharedPreferences(getActivity()).registerOnSharedPreferenceChangeListener(this);
 
+        //ADD FAKE DATA
+
         return view;
     }
 
