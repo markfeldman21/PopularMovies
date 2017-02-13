@@ -21,6 +21,15 @@ public class MovieDatabase {
         return this;
     }
 
+    public void transactionSuccesful(){
+        mDb.setTransactionSuccessful();
+    }
+
+    public void endTransaction(){
+        mDb.endTransaction();
+    }
+
+
     public Cursor getAllRows(){
         return mDb.query(MovieContract.MovieDataContract.TABLE_NAME,null,null,null,null,null,null);
     }
@@ -44,17 +53,10 @@ public class MovieDatabase {
     }
 
     //SQLite return statement returns long containing id of inserted Row
-    public long insertRow(String title, String plot, Double rating, String release, String poster, String pref){
-        ContentValues cv = new ContentValues();
-        cv.put(MovieContract.MovieDataContract.MOVIE_TITLE, title);
-        cv.put(MovieContract.MovieDataContract.MOVIE_PLOT, plot);
-        cv.put(MovieContract.MovieDataContract.MOVIE_RATING,rating);
-        cv.put(MovieContract.MovieDataContract.MOVIE_RELEASE,release);
-        cv.put(MovieContract.MovieDataContract.MOVIE_POSTER_TAG,poster);
-        cv.put(MovieContract.MovieDataContract.MOVIE_PREFERENCE,pref);
-
-        return mDb.insert(MovieContract.MovieDataContract.TABLE_NAME, null,cv);
+    public long insertRow(String table, ContentValues cv){
+        return mDb.insert(table, null,cv);
     }
+
 
 
     public static class MovieDatabaseHelper extends SQLiteOpenHelper{

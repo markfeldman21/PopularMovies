@@ -35,7 +35,10 @@ public class MovContentProvider extends ContentProvider {
             case CODE_DB:{
                 break;
             }
+            default:
+                throw new UnsupportedOperationException("UNKOWN URI: " + uri);
         }
+
         return null;
     }
 
@@ -45,10 +48,40 @@ public class MovContentProvider extends ContentProvider {
         return null;
     }
 
+    //makes it clear that the method accepts null values,
+    // and that if you override the method, you should also accept null values.
     @Nullable
     @Override
     public Uri insert(Uri uri, ContentValues values) {
         return null;
+    }
+
+    @Override
+    public int bulkInsert(Uri uri, ContentValues[] values) {
+        int match = sUriMatcher.match(uri);
+        int rowsInserted=0;
+        switch (match){
+            case CODE_DB:{
+                try{
+                    for (ContentValues value : values){
+                        long id = movieDatabase.insertRow(MovieContract.MovieDataContract.TABLE_NAME,value);
+                        if (id!=-1){
+                            rowsInserted++;
+                        }
+                    }
+                    movieDatabase.transactionSuccesful();
+                }finally {
+                    movieDatabase.endTransaction();
+                }
+                if (rowsInserted>0){
+                    getContext().getContentResolver().notifyChange(uri,null);
+                }
+                return rowsInserted;
+
+            }
+            default:
+                return super.bulkInsert(uri, values);
+        }
     }
 
     @Override
