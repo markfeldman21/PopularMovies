@@ -12,12 +12,14 @@ import com.markfeldman.popularmovies.database.MovieDatabase;
 
 public class MovContentProvider extends ContentProvider {
     public static final int CODE_DB = 100;
+    public static final int CODE_DB_WITH_ID = 101;
     private MovieDatabase movieDatabase;
     private UriMatcher sUriMatcher = buildUriMatcher();
 
     public UriMatcher buildUriMatcher(){
         final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         uriMatcher.addURI(MovieContract.CONTENT_AUTHORITY,MovieContract.PATH,CODE_DB);
+        uriMatcher.addURI(MovieContract.CONTENT_AUTHORITY,MovieContract.PATH + "/#",CODE_DB);
         return uriMatcher;
     }
 
@@ -33,6 +35,11 @@ public class MovContentProvider extends ContentProvider {
         int match = sUriMatcher.match(uri);
         switch (match){
             case CODE_DB:{
+                break;
+            }
+            case CODE_DB_WITH_ID:{
+                //use this to get ID passed in with URI String id = uri.getPathSegments().get(1);
+                //Get Specific Row with all Data For Detail Fragment
                 break;
             }
             default:

@@ -3,6 +3,7 @@ package com.markfeldman.popularmovies.fragments;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -86,6 +87,9 @@ public class MoviesFragment extends Fragment implements MovieRecyclerAdapter.Mov
     @Override
     public void onCLicked(MovieObj movieChosen) {
         Intent i = new Intent(getActivity(), DetailActivity.class);
+        //Get ID of row and pass in Intent. Try using:
+        // int id = (int) viewHolder.itemView.getTag();
+        //Tag should be set in RecyclerViewAdapter
         i.putExtra(INTENT_EXTRA, movieChosen);
         startActivity(i);
     }

@@ -35,7 +35,7 @@ public final class NetworkUtils {
     //each individal and place in same ContentValues Object for provider
 
     public static URL buildUrl(String pref) throws MalformedURLException {
-        Log.d("NEWTORK", "IN UTILS STRING = " + pref);
+        Log.d("NETWORK", "IN UTILS STRING = " + pref);
         URL url = null;
         Uri builtUri = null;
         if (pref.equals("Most Popular")){
