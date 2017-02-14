@@ -2,12 +2,15 @@ package com.markfeldman.popularmovies.utilities;
 
 
 import android.content.Context;
+import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.markfeldman.popularmovies.database.MovieContract;
 import com.markfeldman.popularmovies.objects.MovieObj;
 import com.squareup.picasso.Picasso;
 
@@ -17,6 +20,7 @@ public class MovieRecyclerAdapter extends RecyclerView.Adapter<MovieRecyclerAdap
     private MovieObj[] movies;
     private final String MOVIE_DB_URL_START = "http://image.tmdb.org/t/p/w185/";
     private MovieClickedListener movieClickedListener;
+    private Cursor cursor;
 
 
     public interface MovieClickedListener{
@@ -42,18 +46,18 @@ public class MovieRecyclerAdapter extends RecyclerView.Adapter<MovieRecyclerAdap
     @Override
     public void onBindViewHolder(MovieAdapterViewHolder holder, int position) {
         Context context = holder.movPoster.getContext();
-        Picasso.with(context).load(MOVIE_DB_URL_START + movies[position].getMoviePosterTag()).fit().into(holder.movPoster);
+        cursor.moveToPosition(position);
+        String moviePoster = cursor.getString(cursor.getColumnIndex(MovieContract.MovieDataContract.MOVIE_POSTER_TAG));
+        Picasso.with(context).load(MOVIE_DB_URL_START + moviePoster).fit().into(holder.movPoster);
     }
 
     @Override
     public int getItemCount() {
-        if (null == movies) return 0;
-        return movies.length;
+        if (cursor==null){
+            return 0;
+        }
+        return cursor.getCount();
     }
-
-
-
-
 
 
     public class MovieAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -74,8 +78,11 @@ public class MovieRecyclerAdapter extends RecyclerView.Adapter<MovieRecyclerAdap
 
     }
 
-    public void setMovieData(MovieObj[] movies) {
-        this.movies = movies;
+    public void swap (Cursor c){
+        Log.v("TAG","IN ADAPTER SWAP!!!");
+
+
+        this.cursor = c;
         notifyDataSetChanged();
     }
 

@@ -1,14 +1,17 @@
 package com.markfeldman.popularmovies.fragments;
 
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -20,7 +23,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.markfeldman.popularmovies.R;
 import com.markfeldman.popularmovies.activities.DetailActivity;
+import com.markfeldman.popularmovies.database.MovieContract;
 import com.markfeldman.popularmovies.database.MovieDatabase;
+import com.markfeldman.popularmovies.utilities.FakeData;
 import com.markfeldman.popularmovies.utilities.JSONParser;
 import com.markfeldman.popularmovies.utilities.MovSharedPreferences;
 import com.markfeldman.popularmovies.utilities.MovieRecyclerAdapter;
@@ -32,16 +37,19 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 
-public class MoviesFragment extends Fragment implements MovieRecyclerAdapter.MovieClickedListener, LoaderManager.LoaderCallbacks<MovieObj[]>,
+public class MoviesFragment extends Fragment implements MovieRecyclerAdapter.MovieClickedListener, LoaderManager.LoaderCallbacks<Cursor>,
         SharedPreferences.OnSharedPreferenceChangeListener{
     private RecyclerView recyclerView;
     private MovieRecyclerAdapter movieRecyclerAdapter;
     private final String INTENT_EXTRA = "Intent Extra";
     private TextView errorMessage;
-    private final static int SEARCH_LOADER = 1;
-    private static final String SEARCH_QUERY_URL_EXTRA = "query";
+    private final static int SEARCH_LOADER_ID = 1;
     private ProgressBar progressBar;
     private static boolean PREFERENCES_HAVE_BEEN_UPDATED = false;
+    private String[] projection = {MovieContract.MovieDataContract._ID,MovieContract.MovieDataContract.MOVIE_TITLE,
+            MovieContract.MovieDataContract.MOVIE_RELEASE,MovieContract.MovieDataContract.MOVIE_RATING,
+            MovieContract.MovieDataContract.MOVIE_POSTER_TAG,MovieContract.MovieDataContract.MOVIE_PLOT,
+            MovieContract.MovieDataContract.MOVIE_PREFERENCE, MovieContract.MovieDataContract.MOVIE_ID};
 
 
 
@@ -51,7 +59,7 @@ public class MoviesFragment extends Fragment implements MovieRecyclerAdapter.Mov
     @Override
     public void onStart() {
         if (PREFERENCES_HAVE_BEEN_UPDATED){
-            getActivity().getSupportLoaderManager().restartLoader(SEARCH_LOADER,null,this);
+
             PREFERENCES_HAVE_BEEN_UPDATED = false;
         }
 
@@ -62,25 +70,40 @@ public class MoviesFragment extends Fragment implements MovieRecyclerAdapter.Mov
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.d("FORCAST", "IN ON CREATE VIEW = ");
+        Log.d("MOVIEFRAG", "IN ON CREATE VIEW = ");
         View view = inflater.inflate(R.layout.fragment_movies, container, false);
         errorMessage = (TextView) view.findViewById(R.id.tv_error_message_display);
         progressBar = (ProgressBar)view.findViewById(R.id.pb_loading_indicator);
         recyclerView = (RecyclerView)view.findViewById(R.id.recyclerView);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(),2);
 
+
         recyclerView.setLayoutManager(gridLayoutManager);
         recyclerView.setHasFixedSize(true);
         movieRecyclerAdapter = new MovieRecyclerAdapter(this);
         recyclerView.setAdapter(movieRecyclerAdapter);
 
-        LoaderManager.LoaderCallbacks<MovieObj[]> callbacks = this;
-
-        Bundle bundleForLoader = null;
-        getActivity().getSupportLoaderManager().initLoader(SEARCH_LOADER,null,callbacks);
         PreferenceManager.getDefaultSharedPreferences(getActivity()).registerOnSharedPreferenceChangeListener(this);
 
         //ADD FAKE DATA
+        Cursor cursorTest = getActivity().getContentResolver().query(MovieContract.MovieDataContract.CONTENT_URI,
+                projection,null,null,null);
+
+        if (cursorTest == null){
+            Log.d("MOVIEFRAG", "IN ON CREATE VIEW = CURSOR NULL!!!");
+            ContentValues[] cv = new FakeData().getFakeData();
+            getActivity().getContentResolver().bulkInsert(MovieContract.MovieDataContract.CONTENT_URI,cv);
+        }else{
+            Log.d("MOVIEFRAG", "IN ON CREATE VIEW = CURSOR NOT NULL!!!! ");
+            getActivity().getContentResolver().delete(MovieContract.MovieDataContract.CONTENT_URI,null,null);
+            ContentValues[] cv = new FakeData().getFakeData();
+            getActivity().getContentResolver().bulkInsert(MovieContract.MovieDataContract.CONTENT_URI,cv);
+        }
+
+
+        getActivity().getSupportLoaderManager().initLoader(SEARCH_LOADER_ID, null, this);
+
+        cursorTest.close();
 
         return view;
     }
@@ -96,81 +119,12 @@ public class MoviesFragment extends Fragment implements MovieRecyclerAdapter.Mov
         startActivity(i);
     }
 
-    private void showErrorMessage(){
-        recyclerView.setVisibility(View.INVISIBLE);
-        errorMessage.setVisibility(View.VISIBLE);
-    }
-
-    private void showDataView() {
-        progressBar.setVisibility(View.INVISIBLE);
-        errorMessage.setVisibility(View.INVISIBLE);
-        recyclerView.setVisibility(View.VISIBLE);
-    }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         PreferenceManager.getDefaultSharedPreferences(getActivity())
                 .unregisterOnSharedPreferenceChangeListener(this);
-    }
-
-    @Override
-    public Loader<MovieObj[]> onCreateLoader(int id, final Bundle args) {
-        return  new AsyncTaskLoader<MovieObj[]>(getActivity()) {
-            MovieObj[] movies = null;
-            @Override
-            protected void onStartLoading() {
-                progressBar.setVisibility(View.VISIBLE);
-                if (movies!=null){
-                    progressBar.setVisibility(View.INVISIBLE);
-                    deliverResult(movies);
-                } else{
-                    forceLoad();
-                }
-                super.onStartLoading();
-
-            }
-
-            @Override
-            public MovieObj[] loadInBackground() {
-                String searchQueryURLString = MovSharedPreferences.getPreferredMovieCategory(getActivity());
-                if (searchQueryURLString==null){
-                    return null;
-                }
-                try {
-                    URL movieRequest = NetworkUtils.buildUrl(searchQueryURLString);
-                    String jsonResponse = NetworkUtils.getResponseFromHttpUrl(movieRequest);
-                    JSONParser jsonParser = new JSONParser();
-                    movies = jsonParser.getMovieObjectsL(jsonResponse);
-                    return movies;
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return null;
-                }
-            }
-
-            @Override
-            public void deliverResult(MovieObj[] data) {
-                movies = data;
-                super.deliverResult(data);
-            }
-        };
-    }
-
-    @Override
-    public void onLoadFinished(Loader<MovieObj[]> loader, MovieObj[] data) {
-        if (data == null){
-            showErrorMessage();
-        }else{
-            showDataView();
-            movieRecyclerAdapter.setMovieData(data);
-        }
-
-    }
-
-    @Override
-    public void onLoaderReset(Loader<MovieObj[]> loader) {
-
     }
 
 
@@ -181,9 +135,30 @@ public class MoviesFragment extends Fragment implements MovieRecyclerAdapter.Mov
 
     }
 
-    public void saveToDatabase(MovieObj[] movieObjs){
-        MovieDatabase movieDatabase = new MovieDatabase(getActivity());
-        movieDatabase.open();
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        Log.d("LOADER", "IN CREATE LOADER!!!!!!!! ID ========" +id);
+        switch (id){
+            case SEARCH_LOADER_ID:{
+                Log.d("LOADER", "IN CREATE LOADER CASE!!!!!!!!");
+                Uri movieQueryUri = MovieContract.MovieDataContract.CONTENT_URI;
 
+                return new CursorLoader(getActivity(),movieQueryUri,projection,null,null,null);
+            }
+            default:
+                throw new RuntimeException("CURSOR LOADER NOT IMPLEMENTED " + id);
+        }
+
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        Log.d("LOADER", "IN FINISHED LOADER!!!!!!!!LENGTH ====" + data.getCount());
+        movieRecyclerAdapter.swap(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        movieRecyclerAdapter.swap(null);
     }
 }

@@ -16,9 +16,22 @@ public class MovieDatabase {
         movieDatabaseHelper = new MovieDatabaseHelper(context);
     }
 
-    public MovieDatabase open(){
+    public MovieDatabase openWritable(){
         mDb = movieDatabaseHelper.getWritableDatabase();
         return this;
+    }
+
+    public MovieDatabase openReadable(){
+        mDb = movieDatabaseHelper.getReadableDatabase();
+        return this;
+    }
+
+    public void close(){
+        mDb.close();
+    }
+
+    public void beginTransaction(){
+        mDb.beginTransaction();
     }
 
     public void transactionSuccesful(){
@@ -43,23 +56,23 @@ public class MovieDatabase {
         return c;
     }
 
-    public void deleteRow(long aLong){
-
-    }
 
     public void deleteTable(){
-        mDb.execSQL("DROP TABLE IF EXISTS " + MovieContract.MovieDataContract.TABLE_NAME);
+        mDb.delete(MovieContract.MovieDataContract.TABLE_NAME,null,null);
     }
 
     public void deleteAllRows(){
         Cursor c = getAllRows();
-        long rowID = c.getColumnIndexOrThrow(MovieContract.MovieDataContract._ID);
+        int rowID = c.getColumnIndexOrThrow(MovieContract.MovieDataContract._ID);
+        String idToDelete = Integer.toString(rowID);
+        String[]args = {idToDelete};
         if (c.moveToFirst()){
             do{
-                deleteRow(c.getLong((int) rowID));
+                mDb.delete(MovieContract.MovieDataContract.TABLE_NAME," _id=?",args);
             }while(c.moveToNext());
         }
     }
+
 
     //SQLite return statement returns long containing id of inserted Row
     public long insertRow(String table, ContentValues cv){
@@ -73,7 +86,7 @@ public class MovieDatabase {
         private static final int DATABASE_VERSION = 1;
         private final static String CREATE_DATABASE = "CREATE TABLE " + MovieContract.MovieDataContract.TABLE_NAME +
                 " ("+ MovieContract.MovieDataContract._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                MovieContract.MovieDataContract.MOVIE_TITLE + "TEXT NOT NULL, " +
+                MovieContract.MovieDataContract.MOVIE_TITLE + " TEXT NOT NULL, " +
                 MovieContract.MovieDataContract.MOVIE_PLOT + " TEXT NOT NULL, " +
                 MovieContract.MovieDataContract.MOVIE_RATING + " REAL, " +
                 MovieContract.MovieDataContract.MOVIE_RELEASE + " TEXT NOT NULL, " +

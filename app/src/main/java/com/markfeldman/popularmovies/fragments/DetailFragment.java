@@ -72,4 +72,74 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     public void onLoaderReset(Loader<String> loader) {
 
     }
+
+
+    /* POSSIBLE WAY TO HANDLE THIS
+
+    FIRST IN ONCREATE VIEW:
+     LoaderManager.LoaderCallbacks<MovieObj[]> callbacks = this;
+
+        Bundle bundleForLoader = null;
+        getActivity().getSupportLoaderManager().initLoader(SEARCH_LOADER,null,callbacks);
+
+    @Override
+    public Loader<MovieObj[]> onCreateLoader(int id, final Bundle args) {
+        return  new AsyncTaskLoader<MovieObj[]>(getActivity()) {
+            MovieObj[] movies = null;
+            @Override
+            protected void onStartLoading() {
+                progressBar.setVisibility(View.VISIBLE);
+                if (movies!=null){
+                    progressBar.setVisibility(View.INVISIBLE);
+                    deliverResult(movies);
+                } else{
+                    forceLoad();
+                }
+                super.onStartLoading();
+
+            }
+
+            @Override
+            public MovieObj[] loadInBackground() {
+                String searchQueryURLString = MovSharedPreferences.getPreferredMovieCategory(getActivity());
+                if (searchQueryURLString==null){
+                    return null;
+                }
+                try {
+                    URL movieRequest = NetworkUtils.buildUrl(searchQueryURLString);
+                    String jsonResponse = NetworkUtils.getResponseFromHttpUrl(movieRequest);
+                    JSONParser jsonParser = new JSONParser();
+                    movies = jsonParser.getMovieObjectsL(jsonResponse);
+                    return movies;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+
+            @Override
+            public void deliverResult(MovieObj[] data) {
+                movies = data;
+                super.deliverResult(data);
+            }
+        };
+    }
+
+    @Override
+    public void onLoadFinished(Loader<MovieObj[]> loader, MovieObj[] data) {
+        if (data == null){
+            showErrorMessage();
+        }else{
+            showDataView();
+            movieRecyclerAdapter.setMovieData(data);
+        }
+
+    }
+
+    @Override
+    public void onLoaderReset(Loader<MovieObj[]> loader) {
+
+    }
+
+     */
 }

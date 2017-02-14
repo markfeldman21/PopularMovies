@@ -6,6 +6,7 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.markfeldman.popularmovies.database.MovieContract;
 import com.markfeldman.popularmovies.database.MovieDatabase;
@@ -27,26 +28,28 @@ public class MovContentProvider extends ContentProvider {
     public boolean onCreate() {
         movieDatabase = new MovieDatabase(getContext());
         return true;
+
     }
 
     @Nullable
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+        Log.v("TAG", "IN QUERY!!!!!!!!");
+        movieDatabase.openReadable();
+        Cursor cursor;
         int match = sUriMatcher.match(uri);
         switch (match){
             case CODE_DB:{
-                break;
-            }
-            case CODE_DB_WITH_ID:{
-                //use this to get ID passed in with URI String id = uri.getPathSegments().get(1);
-                //Get Specific Row with all Data For Detail Fragment
+                cursor = movieDatabase.getAllRows();
                 break;
             }
             default:
                 throw new UnsupportedOperationException("UNKOWN URI: " + uri);
         }
 
-        return null;
+        cursor.setNotificationUri(getContext().getContentResolver(), uri);
+
+        return cursor;
     }
 
     @Nullable
@@ -65,17 +68,22 @@ public class MovContentProvider extends ContentProvider {
 
     @Override
     public int bulkInsert(Uri uri, ContentValues[] values) {
+        movieDatabase.openWritable();
         int match = sUriMatcher.match(uri);
         int rowsInserted=0;
         switch (match){
             case CODE_DB:{
+                movieDatabase.beginTransaction();
                 try{
                     for (ContentValues value : values){
                         long id = movieDatabase.insertRow(MovieContract.MovieDataContract.TABLE_NAME,value);
+                        Log.v("TAG",value.getAsString(MovieContract.MovieDataContract.MOVIE_TITLE) + " ===== "+
+                        value.getAsString(MovieContract.MovieDataContract.MOVIE_PLOT));
                         if (id!=-1){
                             rowsInserted++;
                         }
                     }
+
                     movieDatabase.transactionSuccesful();
                 }finally {
                     movieDatabase.endTransaction();
@@ -93,6 +101,8 @@ public class MovContentProvider extends ContentProvider {
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
+        movieDatabase.openWritable();
+        movieDatabase.deleteTable();
         return 0;
     }
 
