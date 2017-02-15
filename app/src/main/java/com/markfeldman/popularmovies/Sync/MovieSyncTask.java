@@ -1,6 +1,7 @@
 package com.markfeldman.popularmovies.Sync;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.markfeldman.popularmovies.utilities.NetworkUtils;
 
@@ -11,6 +12,7 @@ public class MovieSyncTask {
     synchronized public static void syncMovieDB(Context context){
         try{
             URL movieRequestURL = NetworkUtils.getUrl(context);
+            Log.v("TAG", "IN SYNC TASK URL =========== " + movieRequestURL);
 
 
         }catch (Exception e){

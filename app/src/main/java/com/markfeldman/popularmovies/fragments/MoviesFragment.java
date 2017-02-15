@@ -21,6 +21,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.markfeldman.popularmovies.R;
+import com.markfeldman.popularmovies.Sync.MovieSyncUtils;
 import com.markfeldman.popularmovies.activities.DetailActivity;
 import com.markfeldman.popularmovies.database.MovieContract;
 import com.markfeldman.popularmovies.utilities.FakeData;
@@ -72,14 +73,8 @@ public class MoviesFragment extends Fragment implements MovieRecyclerAdapter.Mov
         Cursor cursorTest = getActivity().getContentResolver().query(MovieContract.MovieDataContract.CONTENT_URI,
                 projection,null,null,null);
 
-        if (cursorTest == null){
-            ContentValues[] cv = new FakeData().getFakeData();
-            getActivity().getContentResolver().bulkInsert(MovieContract.MovieDataContract.CONTENT_URI,cv);
-        }else{
-            getActivity().getContentResolver().delete(MovieContract.MovieDataContract.CONTENT_URI,null,null);
-            ContentValues[] cv = new FakeData().getFakeData();
-            getActivity().getContentResolver().bulkInsert(MovieContract.MovieDataContract.CONTENT_URI,cv);
-        }
+        MovieSyncUtils.initialize(getActivity());
+
         getActivity().getSupportLoaderManager().initLoader(SEARCH_LOADER_ID, null, this);
         cursorTest.close();
         showLoading();
@@ -112,6 +107,7 @@ public class MoviesFragment extends Fragment implements MovieRecyclerAdapter.Mov
     public void showErrorText(){
         recyclerView.setVisibility(View.INVISIBLE);
         errorMessage.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.INVISIBLE);
     }
 
 

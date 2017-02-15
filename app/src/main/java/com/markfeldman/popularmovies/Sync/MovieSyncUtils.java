@@ -4,12 +4,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.markfeldman.popularmovies.database.MovieContract;
 
 public class MovieSyncUtils {
 
-    synchronized public static void initialize (final Context context){
+    synchronized public static void initialize(@NonNull final Context context){
+
+        Log.v("TAG", "IN INITIALIZE!!!!!!!!!!!!!!!!!");
 
 
         //What is the class of the object that we've passed to Thread() exactly?
@@ -28,13 +32,18 @@ public class MovieSyncUtils {
                 Cursor cursor = context.getContentResolver().query(uri,projection,null,null,null);
 
                 if (cursor == null|| cursor.getCount()==0){
-                    Intent i = new Intent(context, MovieIntentService.class);
-                    context.startService(i);
+                    startImmediateSync(context);
                 }
                 cursor.close();
             }
         });
         checkForEmpty.start();
+    }
+
+    public static void startImmediateSync(@NonNull final Context context) {
+        Log.v("TAG", "IN START IMMEDIATE!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        Intent intentToSyncImmediately = new Intent(context, MovieIntentService.class);
+        context.startService(intentToSyncImmediately);
     }
 
 }

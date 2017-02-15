@@ -32,6 +32,9 @@
             android:authorities="com.markfeldman.popularmovies"
             android:name=".data.MovContentProvider"
             android:exported="false"/>
+
+        <service android:name=".Sync.MovieIntentService"
+            android:exported="false"/>
     </application>
 
 </manifest>
