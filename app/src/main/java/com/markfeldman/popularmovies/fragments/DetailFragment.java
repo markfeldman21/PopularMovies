@@ -2,6 +2,8 @@ package com.markfeldman.popularmovies.fragments;
 
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -14,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.markfeldman.popularmovies.R;
+import com.markfeldman.popularmovies.database.MovieContract;
 import com.markfeldman.popularmovies.objects.MovieObj;
 import com.squareup.picasso.Picasso;
 
@@ -24,6 +27,11 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     private final String MOVIE_DB_URL_START = "http://image.tmdb.org/t/p/w185/";
     private String imageUrl;
     private MovieObj movieObj;
+    private String[] projection = {MovieContract.MovieDataContract._ID,MovieContract.MovieDataContract.MOVIE_TITLE,
+            MovieContract.MovieDataContract.MOVIE_RELEASE,MovieContract.MovieDataContract.MOVIE_RATING,
+            MovieContract.MovieDataContract.MOVIE_POSTER_TAG,MovieContract.MovieDataContract.MOVIE_PLOT,
+            MovieContract.MovieDataContract.MOVIE_PREFERENCE, MovieContract.MovieDataContract.MOVIE_ID};
+
 
     public DetailFragment() {
         // Required empty public constructor
@@ -51,8 +59,15 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
         Intent i = getActivity().getIntent();
         if (i!=null && i.hasExtra(INTENT_EXTRA)){
-            movieObj = i.getParcelableExtra(INTENT_EXTRA);
-            Picasso.with(getActivity()).load(MOVIE_DB_URL_START + movieObj.getMoviePosterTag()).fit().into(moviePoster);
+            //movieObj = i.getParcelableExtra(INTENT_EXTRA);
+            Uri authority = MovieContract.MovieDataContract.CONTENT_URI;
+            int id = i.getIntExtra(INTENT_EXTRA,0);
+            String idConvert = Integer.toString(id);
+            authority = authority.buildUpon().appendPath(idConvert).build();
+
+            Cursor cursor = getActivity().getContentResolver().query(authority,projection,null,new String[]{idConvert},null);
+            Picasso.with(getActivity()).load(MOVIE_DB_URL_START + cursor.getString(cursor.getColumnIndex(MovieContract.MovieDataContract.MOVIE_POSTER_TAG)))
+                    .fit().into(moviePoster);
         }
 
         return view;

@@ -17,14 +17,11 @@ import com.squareup.picasso.Picasso;
 import com.markfeldman.popularmovies.R;
 
 public class MovieRecyclerAdapter extends RecyclerView.Adapter<MovieRecyclerAdapter.MovieAdapterViewHolder> {
-    private MovieObj[] movies;
-    private final String MOVIE_DB_URL_START = "http://image.tmdb.org/t/p/w185/";
     private MovieClickedListener movieClickedListener;
     private Cursor cursor;
 
-
     public interface MovieClickedListener{
-        void onCLicked(MovieObj movieChosen);
+        void onCLicked(int Id);
     }
 
     public MovieRecyclerAdapter(MovieClickedListener listener){
@@ -33,18 +30,17 @@ public class MovieRecyclerAdapter extends RecyclerView.Adapter<MovieRecyclerAdap
 
     @Override
     public MovieAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-
         Context context = parent.getContext();
         int layoutIdForListItem = R.layout.mov_poster;
         LayoutInflater inflater = LayoutInflater.from(context);
         boolean shouldAttachToParentImmediately = false;
-
         View view = inflater.inflate(layoutIdForListItem, parent, shouldAttachToParentImmediately);
         return new MovieAdapterViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(MovieAdapterViewHolder holder, int position) {
+        final String MOVIE_DB_URL_START = "http://image.tmdb.org/t/p/w185/";
         Context context = holder.movPoster.getContext();
         cursor.moveToPosition(position);
         String moviePoster = cursor.getString(cursor.getColumnIndex(MovieContract.MovieDataContract.MOVIE_POSTER_TAG));
@@ -59,7 +55,6 @@ public class MovieRecyclerAdapter extends RecyclerView.Adapter<MovieRecyclerAdap
         return cursor.getCount();
     }
 
-
     public class MovieAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public ImageView movPoster;
 
@@ -72,18 +67,13 @@ public class MovieRecyclerAdapter extends RecyclerView.Adapter<MovieRecyclerAdap
         @Override
         public void onClick(View v) {
             int adapterPosition = getAdapterPosition();
-            movieClickedListener.onCLicked(movies[adapterPosition]);
+            cursor.moveToPosition(adapterPosition);
+            movieClickedListener.onCLicked(cursor.getInt(cursor.getColumnIndex(MovieContract.MovieDataContract._ID)));
         }
-
-
     }
 
     public void swap (Cursor c){
-        Log.v("TAG","IN ADAPTER SWAP!!!");
-
-
         this.cursor = c;
         notifyDataSetChanged();
     }
-
 }

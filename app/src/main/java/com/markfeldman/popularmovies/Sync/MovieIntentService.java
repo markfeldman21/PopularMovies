@@ -12,6 +12,6 @@ public class MovieIntentService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         String action = intent.getAction();
-        SyncOrganizer.executeSync(this, action);
+        //Execute the SyncTask Class
     }
 }

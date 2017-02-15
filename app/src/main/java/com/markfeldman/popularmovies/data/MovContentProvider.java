@@ -1,5 +1,6 @@
 package com.markfeldman.popularmovies.data;
 
+import android.annotation.TargetApi;
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.UriMatcher;
@@ -20,7 +21,7 @@ public class MovContentProvider extends ContentProvider {
     public UriMatcher buildUriMatcher(){
         final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         uriMatcher.addURI(MovieContract.CONTENT_AUTHORITY,MovieContract.PATH,CODE_DB);
-        uriMatcher.addURI(MovieContract.CONTENT_AUTHORITY,MovieContract.PATH + "/#",CODE_DB);
+        uriMatcher.addURI(MovieContract.CONTENT_AUTHORITY,MovieContract.PATH + "/#",CODE_DB_WITH_ID);
         return uriMatcher;
     }
 
@@ -34,13 +35,18 @@ public class MovContentProvider extends ContentProvider {
     @Nullable
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-        Log.v("TAG", "IN QUERY!!!!!!!!");
         movieDatabase.openReadable();
         Cursor cursor;
         int match = sUriMatcher.match(uri);
         switch (match){
             case CODE_DB:{
                 cursor = movieDatabase.getAllRows();
+                break;
+            }
+            case CODE_DB_WITH_ID:{
+                Log.v("TAG", "IN QUERY WITH ID!!!!!!!! SELECTION ARGS ===== " + selectionArgs[0]);
+                String selectionWhere = MovieContract.MovieDataContract._ID + "=?";
+                cursor = movieDatabase.getSpecificRow(MovieContract.MovieDataContract.TABLE_NAME,projection,selectionWhere,selectionArgs);
                 break;
             }
             default:
@@ -109,5 +115,12 @@ public class MovContentProvider extends ContentProvider {
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         return 0;
+    }
+
+    @Override
+    @TargetApi(11)
+    public void shutdown() {
+        movieDatabase.close();
+        super.shutdown();
     }
 }

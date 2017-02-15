@@ -22,8 +22,7 @@ public final class NetworkUtils {
     private static final String TAG = NetworkUtils.class.getSimpleName();
 
     final static String BASE_URL = "http://api.themoviedb.org/";
-    final static String SEARCH_BY_POP = "3/movie/popular";
-    final static String SEARCH_BY_TOP = "3/movie/top_rated";
+    final static String SEARCH_BY = "3/movie/";
     final static String API_KEY_SEARCH = "?api_key=";
     final static String API_KEY ="657b6c53f883538fe1f57b0e84031c09";
     final static String LANGUAGE_PARAM = "&language=";
@@ -34,22 +33,21 @@ public final class NetworkUtils {
     //Have 2 mwthods that reurn URLs for both top rated and pop movies. Have the Json Parser parse
     //each individal and place in same ContentValues Object for provider
 
-    public static URL buildUrl(String pref) throws MalformedURLException {
-        Log.d("NETWORK", "IN UTILS STRING = " + pref);
+    public static URL getUrl(Context context) throws MalformedURLException {
+        String prefCategory = MovSharedPreferences.getPreferredMovieCategory(context);
+
         URL url = null;
-        Uri builtUri = null;
-        if (pref.equals("Most Popular")){
-            builtUri = Uri.parse(BASE_URL).buildUpon()
-                    .appendEncodedPath(SEARCH_BY_POP + API_KEY_SEARCH + API_KEY + LANGUAGE_PARAM + LANGUAGE + PAGE_PARAM + PAGE_NUM)
-                    .build();
-            url = new URL(builtUri.toString());
-        } else if (pref.equals("Top Rated")){
-            builtUri = Uri.parse(BASE_URL).buildUpon()
-                    .appendEncodedPath(SEARCH_BY_TOP + API_KEY_SEARCH + API_KEY + LANGUAGE_PARAM + LANGUAGE + PAGE_PARAM + PAGE_NUM)
-                    .build();
-        }
+        Uri builtUri = buildURI(prefCategory);
         url = new URL(builtUri.toString());
         return url;
+    }
+
+
+    public static Uri buildURI(String pref){
+        Uri uri = Uri.parse(BASE_URL).buildUpon()
+                .appendEncodedPath(SEARCH_BY + pref+ API_KEY_SEARCH + API_KEY + LANGUAGE_PARAM + LANGUAGE + PAGE_PARAM + PAGE_NUM)
+                .build();
+        return uri;
     }
 
 

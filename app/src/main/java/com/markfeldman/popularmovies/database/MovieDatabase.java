@@ -47,9 +47,9 @@ public class MovieDatabase {
         return mDb.query(MovieContract.MovieDataContract.TABLE_NAME,null,null,null,null,null,null);
     }
 
-    public Cursor getSpecificRow(String tableName,String[] projection,String[] rowID){
-        String where = MovieContract.MovieDataContract._ID + " = ?" + rowID;
-        Cursor c = mDb.query(tableName,projection,where,rowID,null,null,null);
+    public Cursor getSpecificRow(String tableName,String[] projection,String selection,String[] rowID){
+        //String where = MovieContract.MovieDataContract._ID + "=?";
+        Cursor c = mDb.query(tableName,projection,selection,rowID,null,null,null);
         if (c!=null){
             c.moveToFirst();
         }
