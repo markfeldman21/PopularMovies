@@ -26,8 +26,7 @@ public class MovieSyncUtils {
                 Uri uri = MovieContract.MovieDataContract.CONTENT_URI;
                 String[] projection = {MovieContract.MovieDataContract._ID,MovieContract.MovieDataContract.MOVIE_TITLE,
                         MovieContract.MovieDataContract.MOVIE_RELEASE,MovieContract.MovieDataContract.MOVIE_RATING,
-                        MovieContract.MovieDataContract.MOVIE_POSTER_TAG,MovieContract.MovieDataContract.MOVIE_PLOT,
-                        MovieContract.MovieDataContract.MOVIE_PREFERENCE, MovieContract.MovieDataContract.MOVIE_ID};
+                        MovieContract.MovieDataContract.MOVIE_POSTER_TAG,MovieContract.MovieDataContract.MOVIE_PLOT,};
 
                 Cursor cursor = context.getContentResolver().query(uri,projection,null,null,null);
 
@@ -41,7 +40,6 @@ public class MovieSyncUtils {
     }
 
     public static void startImmediateSync(@NonNull final Context context) {
-        Log.v("TAG", "IN START IMMEDIATE!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         Intent intentToSyncImmediately = new Intent(context, MovieIntentService.class);
         context.startService(intentToSyncImmediately);
     }

@@ -17,7 +17,6 @@ import android.widget.TextView;
 
 import com.markfeldman.popularmovies.R;
 import com.markfeldman.popularmovies.database.MovieContract;
-import com.markfeldman.popularmovies.objects.MovieObj;
 import com.squareup.picasso.Picasso;
 
 public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<String> {
@@ -26,11 +25,9 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     private final String INTENT_EXTRA = "Intent Extra";
     private final String MOVIE_DB_URL_START = "http://image.tmdb.org/t/p/w185/";
     private String imageUrl;
-    private MovieObj movieObj;
     private String[] projection = {MovieContract.MovieDataContract._ID,MovieContract.MovieDataContract.MOVIE_TITLE,
             MovieContract.MovieDataContract.MOVIE_RELEASE,MovieContract.MovieDataContract.MOVIE_RATING,
-            MovieContract.MovieDataContract.MOVIE_POSTER_TAG,MovieContract.MovieDataContract.MOVIE_PLOT,
-            MovieContract.MovieDataContract.MOVIE_PREFERENCE, MovieContract.MovieDataContract.MOVIE_ID};
+            MovieContract.MovieDataContract.MOVIE_POSTER_TAG,MovieContract.MovieDataContract.MOVIE_PLOT};
 
 
     public DetailFragment() {

@@ -91,8 +91,7 @@ public class MovieDatabase {
                 MovieContract.MovieDataContract.MOVIE_RATING + " REAL, " +
                 MovieContract.MovieDataContract.MOVIE_RELEASE + " TEXT NOT NULL, " +
                 MovieContract.MovieDataContract.MOVIE_POSTER_TAG + " TEXT NOT NULL, " +
-                MovieContract.MovieDataContract.MOVIE_ID + " TEXT NOT NULL, " +
-                MovieContract.MovieDataContract.MOVIE_PREFERENCE + " TEXT NOT NULL" +
+                MovieContract.MovieDataContract.MOVIE_ID + " TEXT NOT NULL " +
                 ");";
 
 

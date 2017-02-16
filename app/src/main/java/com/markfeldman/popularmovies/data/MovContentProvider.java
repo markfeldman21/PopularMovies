@@ -44,7 +44,6 @@ public class MovContentProvider extends ContentProvider {
                 break;
             }
             case CODE_DB_WITH_ID:{
-                Log.v("TAG", "IN QUERY WITH ID!!!!!!!! SELECTION ARGS ===== " + selectionArgs[0]);
                 String selectionWhere = MovieContract.MovieDataContract._ID + "=?";
                 cursor = movieDatabase.getSpecificRow(MovieContract.MovieDataContract.TABLE_NAME,projection,selectionWhere,selectionArgs);
                 break;
@@ -83,8 +82,6 @@ public class MovContentProvider extends ContentProvider {
                 try{
                     for (ContentValues value : values){
                         long id = movieDatabase.insertRow(MovieContract.MovieDataContract.TABLE_NAME,value);
-                        Log.v("TAG",value.getAsString(MovieContract.MovieDataContract.MOVIE_TITLE) + " ===== "+
-                        value.getAsString(MovieContract.MovieDataContract.MOVIE_PLOT));
                         if (id!=-1){
                             rowsInserted++;
                         }

@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.markfeldman.popularmovies.database.MovieContract;
-import com.markfeldman.popularmovies.objects.MovieObj;
 import com.squareup.picasso.Picasso;
 
 import com.markfeldman.popularmovies.R;

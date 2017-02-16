@@ -6,6 +6,12 @@
         <item>top_rated</item>
         <item>popular</item>
     </string-array>
+
+    <string-array name="entry_view_order">
+        <item>TOP RATED</item>
+        <item>POPULAR</item>
+    </string-array>
+
     <string name="movie_pref_key">movie pref key</string>
     <string name="pref_default_unit">popular</string>
     <string name="title_activity_settings">Settings</string>

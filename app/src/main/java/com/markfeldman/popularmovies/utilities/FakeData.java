@@ -12,7 +12,6 @@ public class FakeData {
 
         ContentValues movieValues1 = new ContentValues();
 
-        movieValues1.put(MovieContract.MovieDataContract.MOVIE_PREFERENCE, "Top Rated");
         movieValues1.put(MovieContract.MovieDataContract.MOVIE_PLOT,"Guy gets candy");
         movieValues1.put(MovieContract.MovieDataContract.MOVIE_RATING,"5.5");
         movieValues1.put(MovieContract.MovieDataContract.MOVIE_POSTER_TAG,"/xq1Ugd62d23K2knRUx6xxuALTZB.jpg");
@@ -25,7 +24,6 @@ public class FakeData {
         ContentValues movieValues2 = new ContentValues();
 
 
-        movieValues2.put(MovieContract.MovieDataContract.MOVIE_PREFERENCE, "Most Popular");
         movieValues2.put(MovieContract.MovieDataContract.MOVIE_PLOT,"Lady buys books");
         movieValues2.put(MovieContract.MovieDataContract.MOVIE_RATING,"8.5");
         movieValues2.put(MovieContract.MovieDataContract.MOVIE_POSTER_TAG,"/z09QAf8WbZncbitewNk6lKYMZsh.jpg");

@@ -35,19 +35,19 @@ public final class NetworkUtils {
 
     public static URL getUrl(Context context) throws MalformedURLException {
         String prefCategory = MovSharedPreferences.getPreferredMovieCategory(context);
-
-        URL url = null;
         Uri builtUri = buildURI(prefCategory);
-        url = new URL(builtUri.toString());
-        return url;
+
+        try{
+            return new URL(builtUri.toString());
+        }catch (MalformedURLException e){
+            return null;
+        }
     }
 
-
-    public static Uri buildURI(String pref){
-        Uri uri = Uri.parse(BASE_URL).buildUpon()
+    private static Uri buildURI(String pref){
+        return Uri.parse(BASE_URL).buildUpon()
                 .appendEncodedPath(SEARCH_BY + pref+ API_KEY_SEARCH + API_KEY + LANGUAGE_PARAM + LANGUAGE + PAGE_PARAM + PAGE_NUM)
                 .build();
-        return uri;
     }
 
 
@@ -69,5 +69,4 @@ public final class NetworkUtils {
             urlConnection.disconnect();
         }
     }
-
 }
