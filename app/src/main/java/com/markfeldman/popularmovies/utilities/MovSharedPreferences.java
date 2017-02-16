@@ -14,4 +14,5 @@ public class MovSharedPreferences {
         String defaultLocation = context.getString(R.string.pref_default_unit);
         return prefs.getString(keyForLocation, defaultLocation);
     }
+
 }
