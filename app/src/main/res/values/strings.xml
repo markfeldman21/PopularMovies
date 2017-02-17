@@ -21,5 +21,9 @@
     <string name="settingsActivity">Settings</string>
     <string name="detailActivity">Detail</string>
 
+    <!--Details-->
+    <string name="trailer">"TRAILER 1"</string>
+    <string name="rating_add_on">/10, %s</string>
+
 
 </resources>

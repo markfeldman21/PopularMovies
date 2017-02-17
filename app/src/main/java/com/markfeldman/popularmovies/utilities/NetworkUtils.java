@@ -51,6 +51,25 @@ public final class NetworkUtils {
     }
 
 
+    public static URL getURLForTrailer(String movieId) throws MalformedURLException {
+        String movieSearch = movieId+"/videos";
+        Uri uri = (buildURI(movieId));
+
+        try {
+            return new URL(buildUriForTrailer(movieId).toString());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private static Uri buildUriForTrailer(String movieId){
+        return Uri.parse(BASE_URL).buildUpon()
+                .appendEncodedPath(SEARCH_BY + movieId + "/videos" + API_KEY_SEARCH + API_KEY + LANGUAGE_PARAM + LANGUAGE)
+                .build();
+    }
+
+
     public static String getResponseFromHttpUrl(URL url) throws IOException {
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         try {

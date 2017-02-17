@@ -39,7 +39,8 @@ public class MoviesFragment extends Fragment implements MovieRecyclerAdapter.Mov
     private ProgressDialog progressDialog;
     private String[] projection = {MovieContract.MovieDataContract._ID,MovieContract.MovieDataContract.MOVIE_TITLE,
             MovieContract.MovieDataContract.MOVIE_RELEASE,MovieContract.MovieDataContract.MOVIE_RATING,
-            MovieContract.MovieDataContract.MOVIE_POSTER_TAG,MovieContract.MovieDataContract.MOVIE_PLOT,};
+            MovieContract.MovieDataContract.MOVIE_POSTER_TAG,MovieContract.MovieDataContract.MOVIE_PLOT,
+            MovieContract.MovieDataContract.MOVIE_ID};
 
     public MoviesFragment() {
     }
@@ -70,11 +71,6 @@ public class MoviesFragment extends Fragment implements MovieRecyclerAdapter.Mov
     @Override
     public void onCLicked(int rowId) {
         Intent i = new Intent(getActivity(), DetailActivity.class);
-        //Get ID of row and pass in Intent. Try using:
-        // int id = (int) viewHolder.itemView.getTag();
-        //Tag should be set in RecyclerViewAdapter
-        Toast.makeText(getActivity(), "ID PASS ==== " + rowId, Toast.LENGTH_LONG).show();
-
         i.putExtra(INTENT_EXTRA,rowId);
         startActivity(i);
     }

@@ -10,7 +10,13 @@ import android.widget.Toast;
 
 import com.markfeldman.popularmovies.fragments.MoviesFragment;
 import com.markfeldman.popularmovies.R;
-
+//LEFT TO DO
+//1. IMPLEMENT DYNAMIC BROADCAST TO CHECK FOR INTERNET
+//2. CREATE NOTIFICATIONS FOR USER WHEN JOB IS PERFORMED
+//3. ADD NOTFICATIONS TO PREFS
+//4. ADD BUTTON FOR USERS FAV MOVIE LOCALLY
+//5. OPTIMIZE FOR TABLET
+//6. WRITE TESTS
 public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

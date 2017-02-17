@@ -54,4 +54,16 @@ public class JSONParser {
         return cvArray;
     }
 
+    public static String getYouTubeKeys(String httpResponse) throws JSONException{
+        final String RESULTS = "results";
+        final String KEY_JSON = "key";
+        JSONObject jsonObjectFull = new JSONObject(httpResponse);
+        JSONArray jsonArray = jsonObjectFull.getJSONArray(RESULTS);
+
+        JSONObject jsonObjectIndividual = jsonArray.getJSONObject(0);
+        String value = jsonObjectIndividual.getString(KEY_JSON);
+
+        return value;
+    }
+
 }
