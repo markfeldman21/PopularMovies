@@ -3,6 +3,8 @@ package com.markfeldman.popularmovies.utilities;
 import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -72,6 +74,7 @@ public final class NetworkUtils {
 
     public static String getResponseFromHttpUrl(URL url) throws IOException {
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+        String httpResponseString ="";
         try {
             InputStream in = urlConnection.getInputStream();
 
@@ -80,12 +83,15 @@ public final class NetworkUtils {
 
             boolean hasInput = scanner.hasNext();
             if (hasInput) {
-                return scanner.next();
+                httpResponseString = scanner.next();
             } else {
                 return null;
             }
-        } finally {
+        }catch(IOException e){
+            e.printStackTrace();
+        }finally {
             urlConnection.disconnect();
         }
+        return httpResponseString;
     }
 }

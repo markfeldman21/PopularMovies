@@ -1,9 +1,13 @@
 package com.markfeldman.popularmovies.Sync;
 
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.util.Log;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.markfeldman.popularmovies.database.MovieContract;
 import com.markfeldman.popularmovies.utilities.JSONParser;
@@ -11,7 +15,6 @@ import com.markfeldman.popularmovies.utilities.NetworkUtils;
 import java.net.URL;
 
 public class MovieSyncTask {
-
 
     synchronized public static void syncMovieDB(Context context){
         try{

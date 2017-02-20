@@ -33,10 +33,10 @@ public class MoviesFragment extends Fragment implements MovieRecyclerAdapter.Mov
         {
     private RecyclerView recyclerView;
     private MovieRecyclerAdapter movieRecyclerAdapter;
+    private ProgressBar progressBar;
     private final String INTENT_EXTRA = "Intent Extra";
     private TextView errorMessage;
     private final static int SEARCH_LOADER_ID = 1;
-    private ProgressDialog progressDialog;
     private String[] projection = {MovieContract.MovieDataContract._ID,MovieContract.MovieDataContract.MOVIE_TITLE,
             MovieContract.MovieDataContract.MOVIE_RELEASE,MovieContract.MovieDataContract.MOVIE_RATING,
             MovieContract.MovieDataContract.MOVIE_POSTER_TAG,MovieContract.MovieDataContract.MOVIE_PLOT,
@@ -51,9 +51,8 @@ public class MoviesFragment extends Fragment implements MovieRecyclerAdapter.Mov
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_movies, container, false);
         errorMessage = (TextView) view.findViewById(R.id.tv_error_message_display);
-        progressDialog = new ProgressDialog(getActivity());
-        progressDialog.setMessage("RETRIEVING");
-        progressDialog.show();
+        progressBar = (ProgressBar)view.findViewById(R.id.pb_loading_indicator);
+        progressBar.setVisibility(View.VISIBLE);
         recyclerView = (RecyclerView)view.findViewById(R.id.recyclerView);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(),2);
 
@@ -62,7 +61,6 @@ public class MoviesFragment extends Fragment implements MovieRecyclerAdapter.Mov
         movieRecyclerAdapter = new MovieRecyclerAdapter(this);
         recyclerView.setAdapter(movieRecyclerAdapter);
         MovieSyncUtils.initialize(getActivity());
-        //ADD FAKE DATA
         getActivity().getSupportLoaderManager().initLoader(SEARCH_LOADER_ID, null, this);
         return view;
     }
@@ -77,12 +75,12 @@ public class MoviesFragment extends Fragment implements MovieRecyclerAdapter.Mov
 
     public void loadSuccess(){
         errorMessage.setVisibility(View.INVISIBLE);
-        progressDialog.dismiss();
+        progressBar.setVisibility(View.INVISIBLE);
     }
 
     public void loadFailed(){
         errorMessage.setVisibility(View.VISIBLE);
-        progressDialog.dismiss();
+        progressBar.setVisibility(View.INVISIBLE);
     }
 
 

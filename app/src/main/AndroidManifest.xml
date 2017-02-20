@@ -3,6 +3,7 @@
     package="com.markfeldman.popularmovies">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -35,6 +36,7 @@
 
         <service android:name=".Sync.MovieIntentService"
             android:exported="false"/>
+
     </application>
 
 </manifest>

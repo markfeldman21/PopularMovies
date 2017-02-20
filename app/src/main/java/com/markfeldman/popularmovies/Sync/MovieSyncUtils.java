@@ -12,10 +12,6 @@ import com.markfeldman.popularmovies.database.MovieContract;
 public class MovieSyncUtils {
 
     synchronized public static void initialize(@NonNull final Context context){
-
-        Log.v("TAG", "IN INITIALIZE!!!!!!!!!!!!!!!!!");
-
-
         //What is the class of the object that we've passed to Thread() exactly?
         // It's not an instance of Runnable; Runnable is just an interface.
         // It's an instance of a class that has no name -- an anonymous class -- that implements Runnable.
