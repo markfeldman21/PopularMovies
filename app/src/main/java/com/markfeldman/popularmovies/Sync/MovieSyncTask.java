@@ -29,7 +29,7 @@ public class MovieSyncTask {
             context.getContentResolver().bulkInsert(uri,movieValues);
 
             //ADD NOTIFICATION HERE
-            //NotificationUtils.notifyUser(context);
+            NotificationUtils.notifyUser(context);
 
         }catch (Exception e){
             e.printStackTrace();
