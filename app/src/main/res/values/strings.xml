@@ -25,5 +25,8 @@
     <string name="trailer">"TRAILER 1"</string>
     <string name="rating_add_on">/10, %s</string>
 
+    <string name="notifications_title">MOVIES</string>
+    <string name="notifications_text">Check out some movies</string>
+
 
 </resources>

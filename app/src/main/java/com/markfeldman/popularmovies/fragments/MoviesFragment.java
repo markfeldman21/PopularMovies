@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,6 +29,7 @@ import com.markfeldman.popularmovies.activities.DetailActivity;
 import com.markfeldman.popularmovies.database.MovieContract;
 import com.markfeldman.popularmovies.utilities.FakeData;
 import com.markfeldman.popularmovies.utilities.MovieRecyclerAdapter;
+import com.markfeldman.popularmovies.utilities.NotificationUtils;
 
 public class MoviesFragment extends Fragment implements MovieRecyclerAdapter.MovieClickedListener, LoaderManager.LoaderCallbacks<Cursor>
         {
@@ -60,6 +62,15 @@ public class MoviesFragment extends Fragment implements MovieRecyclerAdapter.Mov
         recyclerView.setHasFixedSize(true);
         movieRecyclerAdapter = new MovieRecyclerAdapter(this);
         recyclerView.setAdapter(movieRecyclerAdapter);
+        Button button = (Button)view.findViewById(R.id.testbutton);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NotificationUtils.notifyUser(getActivity());
+            }
+        });
+
+
         MovieSyncUtils.initialize(getActivity());
         getActivity().getSupportLoaderManager().initLoader(SEARCH_LOADER_ID, null, this);
         return view;

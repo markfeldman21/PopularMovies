@@ -14,7 +14,7 @@ public class MovieIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        Log.v("TAG", "IN INTENT SERVICE!!!!!!!!!!!!!!!!!");
-        MovieSyncTask.syncMovieDB(this);
+        String action = intent.getAction();
+        SyncHelper.executeTask(this,action);
     }
 }
