@@ -6,4 +6,14 @@
         android:defaultValue="@string/pref_default_unit"
         android:entries="@array/entry_view_order"
         android:entryValues="@array/pref_view_order" />
+
+    <CheckBoxPreference
+        android:title="@string/pref_enable_notifications_title"
+        android:defaultValue="@bool/default_show_notifications"
+        android:key="@string/pref_enable_notifications_key"
+        android:summaryOn="@string/pref_enable_notifications_true"
+        android:summaryOff="@string/pref_enable_notifications_false">
+
+    </CheckBoxPreference>
+
 </PreferenceScreen>

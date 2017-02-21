@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import java.util.concurrent.TimeUnit;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 
 import com.firebase.jobdispatcher.Constraint;
@@ -18,13 +19,13 @@ import com.firebase.jobdispatcher.Trigger;
 import com.markfeldman.popularmovies.database.MovieContract;
 
 public class MovieSyncUtils {
-    private static final int SYNC_INTERVAL_HOURS = 12;
-    private static final int SYNC_INTERVAL_SECONDS = (int)TimeUnit.HOURS.toSeconds(SYNC_INTERVAL_HOURS);
-    private static final int SYNC_NEXT = SYNC_INTERVAL_SECONDS/2;
+    private static final int SYNC_INTERVAL_MINUTES = 0;
+    private static final int SYNC_INTERVAL_SECONDS = (int)TimeUnit.MINUTES.toSeconds(SYNC_INTERVAL_MINUTES);
+    private static final int SYNC_NEXT = SYNC_INTERVAL_SECONDS;
     private static boolean initialized;
     private static final String MOVIE_SYNC_TAG = "movie_sync";
 
-    static void scheduleFirebaseJobSync(@NonNull final Context context){
+    private static void scheduleFirebaseJobSync(@NonNull final Context context){
         Driver driver = new GooglePlayDriver(context);
         FirebaseJobDispatcher firebaseJobDispatcher = new FirebaseJobDispatcher(driver);
 
@@ -34,10 +35,13 @@ public class MovieSyncUtils {
                 .setConstraints(Constraint.ON_ANY_NETWORK)
                 .setLifetime(Lifetime.FOREVER)
                 .setRecurring(true)
-                .setTrigger(Trigger.executionWindow(SYNC_INTERVAL_SECONDS,SYNC_INTERVAL_SECONDS + SYNC_NEXT))
+                // start between 0 and X seconds from now
+                .setTrigger(Trigger.executionWindow(0,20))
                 .setReplaceCurrent(true)
                 .build();
         firebaseJobDispatcher.schedule(syncJob);
+
+        Log.v("TAG","JOB TRIGGERED!!!!!!!!!!!!!");
     }
 
 
@@ -46,6 +50,7 @@ public class MovieSyncUtils {
         if (initialized){
             return;
         }
+        initialized = true;
 
         scheduleFirebaseJobSync(context);
 
