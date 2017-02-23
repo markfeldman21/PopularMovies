@@ -33,9 +33,9 @@ public class NotificationUtils {
                 R.drawable.film);
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context)
-                .setSmallIcon(R.drawable.ic_drink_notification)
+                .setSmallIcon(R.drawable.ic_cam)
                 .setLargeIcon(largeIcon)
-                .setColor(ContextCompat.getColor(context,R.color.colorGreen))
+                .setColor(ContextCompat.getColor(context,R.color.colorWhite))
                 .setContentTitle(context.getString(R.string.notifications_title))
                 .setContentText(context.getString(R.string.notifications_text))
                 .setDefaults(Notification.DEFAULT_VIBRATE)
