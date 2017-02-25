@@ -23,14 +23,14 @@ public final class NetworkUtils {
 
     private static final String TAG = NetworkUtils.class.getSimpleName();
 
-    final static String BASE_URL = "http://api.themoviedb.org/";
-    final static String SEARCH_BY = "3/movie/";
-    final static String API_KEY_SEARCH = "?api_key=";
-    final static String API_KEY ="657b6c53f883538fe1f57b0e84031c09";
-    final static String LANGUAGE_PARAM = "&language=";
-    final static String LANGUAGE = "en-US";
-    final static String PAGE_PARAM = "&page=";
-    final static String PAGE_NUM = "1";
+    private final static String BASE_URL = "http://api.themoviedb.org/";
+    private final static String SEARCH_BY = "3/movie/";
+    private final static String API_KEY_SEARCH = "?api_key=";
+    private final static String API_KEY ="657b6c53f883538fe1f57b0e84031c09";
+    private static String LANGUAGE_PARAM = "&language=";
+    private static String LANGUAGE = "en-US";
+    private static String PAGE_PARAM = "&page=";
+    private static String PAGE_NUM = "1";
 
     //Have 2 mwthods that reurn URLs for both top rated and pop movies. Have the Json Parser parse
     //each individal and place in same ContentValues Object for provider

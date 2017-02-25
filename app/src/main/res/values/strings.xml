@@ -31,10 +31,18 @@
     <!--Details-->
     <string name="trailer">"TRAILER 1"</string>
     <string name="rating_add_on">/10, %s</string>
+    <string name="title">TITLE</string>
+    <string name="movie_release">RELEASE</string>
+    <string name="movie_rating">RATING</string>
+    <string name="movie_plot">"Twenty-two years after the events of Jurassic Park, Isla Nublar now features a fully functioning dinosaur theme park, Jurassic World, as originally envisioned by John Hammond."</string>
 
     <!--Notifications-->
     <string name="notifications_title">MOVIES</string>
     <string name="notifications_text">Click Here To Check Out Some Movies!</string>
+
+    <!--ContentDescription-->
+
+    <string name="contentDescriptionMovieImage">Movie Image</string>
 
 
 </resources>

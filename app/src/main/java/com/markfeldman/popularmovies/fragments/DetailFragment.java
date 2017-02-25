@@ -49,7 +49,8 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_detail, container, false);
+        Log.v("TAG", "IN ON CREATE VIEW!!!!!!!!!!!");
+        View view = inflater.inflate(R.layout.fragment_detail_constraint, container, false);
 
         TextView title = (TextView)view.findViewById(R.id.movie_title);
         ImageView moviePoster = (ImageView)view.findViewById(R.id.movie_poster);
@@ -67,17 +68,20 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
             Cursor cursor = getActivity().getContentResolver().query(authority,projection,null,new String[]{idConvert},null);
 
-            Picasso.with(getActivity()).load(MOVIE_DB_URL_START + cursor.getString(cursor.getColumnIndex(MovieContract.MovieDataContract.MOVIE_POSTER_TAG)))
-                    .fit().into(moviePoster);
+            if (cursor!=null && cursor.moveToFirst()){
+                String[] fullDate = cursor.getString(cursor.getColumnIndex(MovieContract.MovieDataContract.MOVIE_RELEASE)).split("-");
+                final String year = fullDate[0];
+                Picasso.with(getActivity()).load(MOVIE_DB_URL_START + cursor.getString(cursor.getColumnIndex(MovieContract.MovieDataContract.MOVIE_POSTER_TAG)))
+                        .fit().into(moviePoster);
+                title.setText(cursor.getString(cursor.getColumnIndex(MovieContract.MovieDataContract.MOVIE_TITLE)));
+                movieRelease.setText(year);
+                movieRating.setText(cursor.getString(cursor.getColumnIndex(MovieContract.MovieDataContract.MOVIE_RATING)) + "/10");
+                moviePlot.setText(cursor.getString(cursor.getColumnIndex(MovieContract.MovieDataContract.MOVIE_PLOT)));
+                movieIdForYoutube = cursor.getString(cursor.getColumnIndex(MovieContract.MovieDataContract.MOVIE_ID));
+                cursor.close();
+            }
 
-            title.setText(cursor.getString(cursor.getColumnIndex(MovieContract.MovieDataContract.MOVIE_TITLE)));
-            movieRelease.setText(cursor.getString(cursor.getColumnIndex(MovieContract.MovieDataContract.MOVIE_RELEASE)));
-            movieRating.setText(cursor.getString(cursor.getColumnIndex(MovieContract.MovieDataContract.MOVIE_RATING)));
-            moviePlot.setText(cursor.getString(cursor.getColumnIndex(MovieContract.MovieDataContract.MOVIE_PLOT)));
-
-            movieIdForYoutube = cursor.getString(cursor.getColumnIndex(MovieContract.MovieDataContract.MOVIE_ID));
         }
-
         LoaderManager.LoaderCallbacks<String> callbacks = this;
         getActivity().getSupportLoaderManager().initLoader(ASYNC_LOADER_ID,null,callbacks);
 

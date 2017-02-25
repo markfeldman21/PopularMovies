@@ -1,9 +1,5 @@
 package com.markfeldman.popularmovies.Sync;
 
-/**
- * Created by markfeldman on 2/19/17.
- */
-
 import android.content.Context;
 import android.os.AsyncTask;
 
@@ -23,7 +19,6 @@ public class FireBaseJobService extends JobService {
                 jobFinished(job,false);
                 return null;
             }
-
             @Override
             protected void onPostExecute(Void aVoid) {
                 jobFinished(job,false);
@@ -38,6 +33,7 @@ public class FireBaseJobService extends JobService {
         if (fetchMovieDate!=null){
             fetchMovieDate.cancel(true);
         }
+
         return true;
     }
 }
