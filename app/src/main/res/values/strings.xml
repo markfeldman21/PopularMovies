@@ -42,7 +42,8 @@
 
     <!--ContentDescription-->
 
-    <string name="contentDescriptionMovieImage">Movie Image</string>
+    <string name="content_description_movie_image">Movie Image</string>
+    <string name="play_trailer">Play Trailer</string>
 
 
 </resources>
