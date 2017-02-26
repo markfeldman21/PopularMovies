@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.markfeldman.popularmovies.database.MovieContract;
 import com.squareup.picasso.Picasso;
@@ -44,6 +45,8 @@ public class MovieRecyclerAdapter extends RecyclerView.Adapter<MovieRecyclerAdap
         cursor.moveToPosition(position);
         String moviePoster = cursor.getString(cursor.getColumnIndex(MovieContract.MovieDataContract.MOVIE_POSTER_TAG));
         Picasso.with(context).load(MOVIE_DB_URL_START + moviePoster).fit().into(holder.movPoster);
+        String movieTitle = cursor.getString(cursor.getColumnIndex(MovieContract.MovieDataContract.MOVIE_TITLE));
+        holder.movTitle.setText(movieTitle);
     }
 
     @Override
@@ -54,12 +57,14 @@ public class MovieRecyclerAdapter extends RecyclerView.Adapter<MovieRecyclerAdap
         return cursor.getCount();
     }
 
-    public class MovieAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        public ImageView movPoster;
+   class MovieAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        ImageView movPoster;
+        TextView movTitle;
 
-        public MovieAdapterViewHolder(View itemView) {
+        MovieAdapterViewHolder(View itemView) {
             super(itemView);
             movPoster = (ImageView) itemView.findViewById(R.id.individual_movie);
+            movTitle = (TextView) itemView.findViewById(R.id.mainPageMovieTitle);
             itemView.setOnClickListener(this);
         }
 

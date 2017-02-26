@@ -27,6 +27,7 @@
     <!--Activities-->
     <string name="settingsActivity">Settings</string>
     <string name="detailActivity">Detail</string>
+    <string name="movie_text_in_label">MOVIES</string>
 
     <!--Details-->
     <string name="trailer">"TRAILER 1"</string>
