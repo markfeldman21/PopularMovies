@@ -5,4 +5,9 @@
     <color name="colorAccent">#FF4081</color>
     <color name="colorGreen">#00897B</color>
     <color name="colorWhite">#ffffff</color>
+
+    <color name="primary_red">#F44336</color>
+    <color name="accent_dark_red">#D32F2F</color>
+    <color name="accent_blue">#536DFE</color>
+
 </resources>
