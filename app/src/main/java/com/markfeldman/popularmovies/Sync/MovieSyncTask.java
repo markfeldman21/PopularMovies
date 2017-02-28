@@ -18,7 +18,6 @@ public class MovieSyncTask {
 
     synchronized public static void syncMovieDB(Context context){
         try{
-            Log.v("TAG","IN SYNC MAIN");
             URL movieRequestURL = NetworkUtils.getUrl(context);
             String httpResponse = NetworkUtils.getResponseFromHttpUrl(movieRequestURL);
             ContentValues[] movieValues = JSONParser.getJsonContentValue(httpResponse);

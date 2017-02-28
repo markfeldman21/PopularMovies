@@ -32,9 +32,6 @@ public final class NetworkUtils {
     private static String PAGE_PARAM = "&page=";
     private static String PAGE_NUM = "1";
 
-    //Have 2 mwthods that reurn URLs for both top rated and pop movies. Have the Json Parser parse
-    //each individal and place in same ContentValues Object for provider
-
     public static URL getUrl(Context context) throws MalformedURLException {
         String prefCategory = MovSharedPreferences.getPreferredMovieCategory(context);
         Uri builtUri = buildURI(prefCategory);
