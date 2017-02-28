@@ -1,39 +1,31 @@
 package com.markfeldman.popularmovies.activities;
 
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
-
-import com.markfeldman.popularmovies.database.MovieContract;
+import com.markfeldman.popularmovies.fragments.DetailFragment;
 import com.markfeldman.popularmovies.fragments.MoviesFragment;
 import com.markfeldman.popularmovies.R;
+import com.markfeldman.popularmovies.utilities.MovieRecyclerAdapter;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
-//LEFT TO DO
-//1. IMPLEMENT DYNAMIC BROADCAST TO CHECK FOR INTERNET
-//2. CREATE NOTIFICATIONS FOR USER WHEN JOB IS PERFORMED
-//3. ADD NOTFICATIONS TO PREFS
 //4. ADD BUTTON FOR USERS FAV MOVIE LOCALLY
 //5. OPTIMIZE FOR TABLET
 //6. WRITE TESTS
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MovieRecyclerAdapter.MovieClickedListener {
     private IntentFilter onlineIntentFilter;
     private CheckOnlineReceiver checkOnlineReceiver;
+    private final String BUNDLE_EXTRA = "Intent Extra";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,6 +70,28 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onCLicked(int id) {
+        FragmentTransaction ft;
+        Bundle bundle = new Bundle();
+        bundle.putInt(BUNDLE_EXTRA,id);
+        DetailFragment detailFrag = new DetailFragment();
+        detailFrag.setArguments(bundle);
+
+        if (findViewById(R.id.container_detail_720dp_land) != null){
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container_detail_720dp_land, detailFrag)
+                    .addToBackStack(null)
+                    .commit();
+        } else{
+            ft=getSupportFragmentManager().beginTransaction();
+            ft.replace(R.id.container,detailFrag)
+                    .addToBackStack(null)
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                    .commit();
+        }
     }
 
     private class CheckOnlineReceiver extends BroadcastReceiver{

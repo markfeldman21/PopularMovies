@@ -4,6 +4,7 @@ package com.markfeldman.popularmovies.fragments;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.res.Resources;
+
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -32,7 +33,7 @@ import java.net.URL;
 public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<String> {
     private String returnedYouTubeKey;
     private String movieIdForYoutube;
-    private final String INTENT_EXTRA = "Intent Extra";
+    private final String BUNDLE_EXTRA = "Intent Extra";
     private final String MOVIE_DB_URL_START = "http://image.tmdb.org/t/p/w185/";
     private String[] projection = {MovieContract.MovieDataContract._ID,MovieContract.MovieDataContract.MOVIE_TITLE,
             MovieContract.MovieDataContract.MOVIE_RELEASE,MovieContract.MovieDataContract.MOVIE_RATING,
@@ -44,7 +45,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     public DetailFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -59,10 +59,10 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         TextView moviePlot = (TextView) view.findViewById(R.id.movie_synopsis);
         ImageView playBtn = (ImageView) view.findViewById(R.id.playButton);
 
-        Intent i = getActivity().getIntent();
-        if (i!=null && i.hasExtra(INTENT_EXTRA)){
+        Bundle bundle = getArguments();
+        if (bundle!=null){
             Uri authority = MovieContract.MovieDataContract.CONTENT_URI;
-            int id = i.getIntExtra(INTENT_EXTRA,0);
+            int id = bundle.getInt(BUNDLE_EXTRA);
             String idConvert = Integer.toString(id);
             authority = authority.buildUpon().appendPath(idConvert).build();
 
