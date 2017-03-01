@@ -1,41 +1,34 @@
 package com.markfeldman.popularmovies.activities;
 
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 import com.markfeldman.popularmovies.fragments.DetailFragment;
 import com.markfeldman.popularmovies.fragments.MoviesFragment;
 import com.markfeldman.popularmovies.R;
 import com.markfeldman.popularmovies.utilities.MovieRecyclerAdapter;
 
-
+//1.Create on Back Pressed For Fragment
+//2. Add Logic to check for Tablwt Layout upon Launch
+//3. Change Layout for Phone - Movie Vertical, Movie Horizontal, Detail Vertical, Detail Horizonal
+//   sw600dp - MoviePoster, Movie Vertical, Movie Horizontal, Detail Vertical, Detail Horizonal
+//   sw720dp - MoviePoster, Movie Vertical, Movie Horizontal, Detail Vertical, Detail Horizonal
 //4. ADD BUTTON FOR USERS FAV MOVIE LOCALLY
 //5. OPTIMIZE FOR TABLET
 //6. WRITE TESTS
 public class MainActivity extends AppCompatActivity implements MovieRecyclerAdapter.MovieClickedListener {
-    private IntentFilter onlineIntentFilter;
-    private CheckOnlineReceiver checkOnlineReceiver;
     private final String BUNDLE_EXTRA = "Intent Extra";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        onlineIntentFilter = new IntentFilter();
-        checkOnlineReceiver = new CheckOnlineReceiver();
-        onlineIntentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-
         if (savedInstanceState==null){
+            //CHECK FOR LANDSCAPR MOVIE XML HERE AS WELL
                 getSupportFragmentManager().beginTransaction()
                         .add(R.id.container, new MoviesFragment())
                         .commit();
@@ -48,17 +41,6 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerAdap
         return true;
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        registerReceiver(checkOnlineReceiver, onlineIntentFilter);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        unregisterReceiver(checkOnlineReceiver);
-    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -91,19 +73,6 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerAdap
                     .addToBackStack(null)
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                     .commit();
-        }
-    }
-
-    private class CheckOnlineReceiver extends BroadcastReceiver{
-
-        @Override
-        public void onReceive(final Context context, Intent intent) {
-            ConnectivityManager cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-            boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
-            if (!isConnected){
-                Toast.makeText(context,"Could Not Retrieve Data. You Are Not Online",Toast.LENGTH_LONG).show();
-            }
         }
     }
 }
