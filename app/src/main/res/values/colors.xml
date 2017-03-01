@@ -10,4 +10,6 @@
     <color name="accent_dark_red">#D32F2F</color>
     <color name="accent_blue">#536DFE</color>
 
+    <color name="selector_color">#EEEEEE</color>
+
 </resources>
