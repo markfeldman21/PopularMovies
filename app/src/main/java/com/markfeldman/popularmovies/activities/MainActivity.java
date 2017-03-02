@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import com.markfeldman.popularmovies.fragments.DetailFragment;
@@ -24,15 +25,31 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerAdap
     private final String BUNDLE_EXTRA = "Intent Extra";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.v("TAG", "IN ON CREATE !!!!!!!!!!!!!!");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         if (savedInstanceState==null){
-            //CHECK FOR LANDSCAPR MOVIE XML HERE AS WELL
+            Log.v("TAG", "IN SI !!!!!!!!!!!!!!");
+            if (findViewById(R.id.container_720dp) != null){
+                Log.v("TAG", "IN tablet !!!!!!!!!!!!!!");
+                getSupportFragmentManager().beginTransaction()
+                        .add(R.id.container_720dp, new MoviesFragment())
+                        .commit();
+            }else {
                 getSupportFragmentManager().beginTransaction()
                         .add(R.id.container, new MoviesFragment())
                         .commit();
             }
+        }else {
+            if (findViewById(R.id.container_detail_720dp_land) != null){
+                Log.v("TAG", "IN ON CLICK DETAIL 720!!!!!!!!!!!!!!");
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.container_720dp, new MoviesFragment())
+                        .addToBackStack(null)
+                        .commit();
+            }
+        }
         }
 
     @Override
@@ -62,12 +79,22 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerAdap
         DetailFragment detailFrag = new DetailFragment();
         detailFrag.setArguments(bundle);
 
-        if (findViewById(R.id.container_detail_720dp_land) != null){
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container_detail_720dp_land, detailFrag)
-                    .addToBackStack(null)
-                    .commit();
+        if (findViewById(R.id.container_720dp) != null){
+            if (findViewById(R.id.container_detail_720dp_land) != null){
+                //You are in landscape mode, fill detail fragment with data on left side of screen
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.container_detail_720dp_land, detailFrag)
+                        .addToBackStack(null)
+                        .commit();
+            }else{
+                //You are portrait mode, replace container with detail Frag
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.container_720dp, detailFrag)
+                        .addToBackStack(null)
+                        .commit();
+            }
         } else{
+            //You are phone layout
             ft=getSupportFragmentManager().beginTransaction();
             ft.replace(R.id.container,detailFrag)
                     .addToBackStack(null)

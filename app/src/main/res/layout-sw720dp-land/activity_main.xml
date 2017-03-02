@@ -8,7 +8,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <FrameLayout
-        android:id="@+id/container_main_720dp_land"
+        android:id="@+id/container_720dp"
         android:layout_width="600dp"
         android:layout_height="0dp"
         tools:context="com.markfeldman.popularmovies.activities.MainActivity"
