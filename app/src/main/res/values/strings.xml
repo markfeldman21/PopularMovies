@@ -39,6 +39,7 @@
 
     <!--Notifications-->
     <string name="notifications_title">MOVIES</string>
+    <string name="notifications_channel">NOTIFICATION_CHANNEL</string>
     <string name="notifications_text">Click Here To Check Out Some Movies!</string>
 
     <!--ContentDescription-->

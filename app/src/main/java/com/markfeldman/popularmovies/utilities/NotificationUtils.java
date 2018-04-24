@@ -1,6 +1,7 @@
 package com.markfeldman.popularmovies.utilities;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -26,7 +27,7 @@ public class NotificationUtils {
     private final static int NAVIGATE_TO_APP_PENDING_INTENT = 3;
     private final static int NOTIFICATION_MOVIE_ID = 34;
     private final static int IGNORE_PENDING_INTENT_ID = 8;
-    private final static String NOTIFICTION_CHANNEL = "reminder_notification_channel";
+    private final static String NOTIFICATION_CHANNEL = "reminder_notification_channel";
 
 
     public static void notifyUser(Context context){
@@ -35,9 +36,15 @@ public class NotificationUtils {
                 R.drawable.film);
 
         NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
-        
 
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context)
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            NotificationChannel notificationChannel = new NotificationChannel(
+                    NOTIFICATION_CHANNEL,context.getString(R.string.notifications_channel),NotificationManager.IMPORTANCE_HIGH);
+            notificationManager.createNotificationChannel(notificationChannel);
+        }
+
+
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context,NOTIFICATION_CHANNEL)
                 .setSmallIcon(R.drawable.ic_cam)
                 .setLargeIcon(largeIcon)
                 .setColor(ContextCompat.getColor(context,R.color.colorWhite))
@@ -48,7 +55,7 @@ public class NotificationUtils {
                 .addAction(ignoreNotification(context))
                 .setAutoCancel(true);
 
-        if (Build.VERSION.SDK_INT>= Build.VERSION_CODES.JELLY_BEAN){
+        if (Build.VERSION.SDK_INT>= Build.VERSION_CODES.JELLY_BEAN && Build.VERSION.SDK_INT < Build.VERSION_CODES.O){
             notificationBuilder.setPriority(Notification.PRIORITY_HIGH);
         }
 
