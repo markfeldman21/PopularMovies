@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.SystemClock;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationCompatSideChannelService;
 import android.support.v4.content.ContextCompat;
 import com.markfeldman.popularmovies.R;
 import com.markfeldman.popularmovies.Sync.MovieIntentService;
@@ -25,12 +26,16 @@ public class NotificationUtils {
     private final static int NAVIGATE_TO_APP_PENDING_INTENT = 3;
     private final static int NOTIFICATION_MOVIE_ID = 34;
     private final static int IGNORE_PENDING_INTENT_ID = 8;
+    private final static String NOTIFICTION_CHANNEL = "reminder_notification_channel";
 
 
     public static void notifyUser(Context context){
         Bitmap largeIcon = BitmapFactory.decodeResource(
                 context.getResources(),
                 R.drawable.film);
+
+        NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+        
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context)
                 .setSmallIcon(R.drawable.ic_cam)
@@ -47,7 +52,6 @@ public class NotificationUtils {
             notificationBuilder.setPriority(Notification.PRIORITY_HIGH);
         }
 
-        NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(NOTIFICATION_MOVIE_ID,notificationBuilder.build());
 
         MovSharedPreferences.saveLastNotification(context, System.currentTimeMillis());

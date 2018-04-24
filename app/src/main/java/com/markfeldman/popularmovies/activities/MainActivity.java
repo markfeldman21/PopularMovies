@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements MovieRecyclerAdap
                         .commit();
             }
         }
-        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

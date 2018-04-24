@@ -47,6 +47,7 @@ public class MovieRecyclerAdapter extends RecyclerView.Adapter<MovieRecyclerAdap
         Picasso.with(context).load(MOVIE_DB_URL_START + moviePoster).fit().into(holder.movPoster);
         String movieTitle = cursor.getString(cursor.getColumnIndex(MovieContract.MovieDataContract.MOVIE_TITLE));
         holder.movTitle.setText(movieTitle);
+
     }
 
     @Override

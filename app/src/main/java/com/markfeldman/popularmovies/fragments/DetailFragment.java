@@ -65,6 +65,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             int id = bundle.getInt(BUNDLE_EXTRA);
             String idConvert = Integer.toString(id);
             authority = authority.buildUpon().appendPath(idConvert).build();
+            Log.d("A", "INSIDE DETAIL URI ===== " + "" + authority);
 
             Cursor cursor = getActivity().getContentResolver().query(authority,projection,null,new String[]{idConvert},null);
 
