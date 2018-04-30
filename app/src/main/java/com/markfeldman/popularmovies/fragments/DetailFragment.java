@@ -49,7 +49,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.v("TAG", "IN ON CREATE VIEW!!!!!!!!!!!");
         View view = inflater.inflate(R.layout.fragment_detail_constraint, container, false);
 
         TextView title = (TextView)view.findViewById(R.id.movie_title);
@@ -65,7 +64,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             int id = bundle.getInt(BUNDLE_EXTRA);
             String idConvert = Integer.toString(id);
             authority = authority.buildUpon().appendPath(idConvert).build();
-            Log.d("A", "INSIDE DETAIL URI ===== " + "" + authority);
 
             Cursor cursor = getActivity().getContentResolver().query(authority,projection,null,new String[]{idConvert},null);
 
@@ -83,8 +81,15 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             }
 
         }
-        LoaderManager.LoaderCallbacks<String> callbacks = this;
-        getActivity().getSupportLoaderManager().initLoader(ASYNC_LOADER_ID,null,callbacks);
+        LoaderManager loaderManager = getActivity().getSupportLoaderManager();
+        Loader<String> loader = loaderManager.getLoader(ASYNC_LOADER_ID);
+        if (loader==null){
+            Log.d("DETAIL", "LOADER IS NULL");
+            loaderManager.initLoader(ASYNC_LOADER_ID,null,this);
+        }else{
+            Log.d("DETAILS", "LOADER EXISTS RESTARTING");
+            loaderManager.restartLoader(ASYNC_LOADER_ID,null,this);
+        }
 
         playBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -97,6 +102,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
     }
 
     public void watchYoutubeVideo(String id){
+        Log.d("DETAIL", "ID ===== " + id);
         Intent appIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + id));
         Intent webIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v=" + id));
         try {
@@ -108,6 +114,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     @Override
     public Loader<String> onCreateLoader(int id, Bundle args) {
+        Log.d("DETAIL"," IN DETAIL LOADER!!!!!!!!");
 
         return new AsyncTaskLoader<String>(getActivity()) {
             String youTubeKey = null;
@@ -137,6 +144,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
             @Override
             public void deliverResult(String data) {
+                Log.d("DETAIL", "IN DELIVERY ===== " + data);
                 youTubeKey = data;
                 super.deliverResult(data);
             }
