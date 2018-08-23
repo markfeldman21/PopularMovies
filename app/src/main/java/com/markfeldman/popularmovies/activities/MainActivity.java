@@ -21,6 +21,8 @@ import com.markfeldman.popularmovies.utilities.MovieRecyclerAdapter;
 //4. ADD BUTTON FOR USERS FAV MOVIE LOCALLY
 //5. OPTIMIZE FOR TABLET
 //6. WRITE TESTS
+
+//ADD NEW RESPONSIBILITIES HERE...
 public class MainActivity extends AppCompatActivity implements MovieRecyclerAdapter.MovieClickedListener {
     private final String BUNDLE_EXTRA = "Intent Extra";
     @Override
